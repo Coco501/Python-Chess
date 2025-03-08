@@ -1,6 +1,6 @@
 # Chess in Python
 Final project for ECS 198F  
-Group members: Joe Vogel, Cait Chau, Jash Patel, Jake Roggenbuck, and Andrew Chui  
+Group members: Joe Vogel, Cait Chau, Jash Patel, and Jake Roggenbuck
 
 ## Outline:
 1. Create breakdown of project, decomposition  
