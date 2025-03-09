@@ -1,0 +1,14 @@
+TODO:
+
+- Docker container for dev environment? Python, pygame, pytest
+- Valid/invalid moves for all pieces
+- Moving onto space already occupied by own piece
+- Capturing pieces
+- Updating board table upon move
+- Win conditions, stalemate conditions
+- Check and checkmate conditions
+- Can't move into check
+- Pawn promotion
+- En Passant
+- Castling (queen and king side)
+- More...
