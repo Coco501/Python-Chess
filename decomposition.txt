@@ -2,13 +2,28 @@ TODO:
 
 - Docker container for dev environment? Python, pygame, pytest
 - Valid/invalid moves for all pieces
-- Moving onto space already occupied by own piece
-- Capturing pieces
-- Updating board table upon move
-- Win conditions, stalemate conditions
-- Check and checkmate conditions
-- Can't move into check
-- Pawn promotion
-- En Passant
-- Castling (queen and king side)
-- More...
+
+
+
+Steps: 
+- Set the board
+- Get move
+- Is valid move?
+    - Check what kind of piece it is
+    - Check that piece is moving properly
+    - Check if it's capturing anything/is it capturing its own piece? 
+    - Check if it's a mate (both sides)
+    - Check if it's a checkmate (both sides)
+    - Check Edge cases: 
+        - Moving onto space already occupied by own piece
+        - Capturing pieces
+        - Updating board table upon move
+        - Win conditions, stalemate conditions
+        - Check and checkmate conditions
+        - Can't move into check
+        - Pawn promotion
+        - En Passant
+        - Castling (queen and king side)
+        - More...
+    - Send message if any error, invalidity 
+    - Update board
