@@ -59,6 +59,7 @@ class ChessLogic:
 
         '''
         pseudocode:
+            ...
             str start_tile = move. first two letters
             str target_tile = move. # last two letters
             
@@ -108,6 +109,10 @@ class ChessLogic:
         # handle capturing diagonally
         # handle en passant
         # handle promotion
+        # handle moving forward
+        # handle moving two spaces forward
+        # handle moving into check
+
 
     def move_knight(self, start_tile: str, target_tile: str) -> bool:
         pass
