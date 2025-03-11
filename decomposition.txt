@@ -9,22 +9,22 @@ Steps:
 - Set the board
 - Get move
 - Is valid move?
-    Jash - Check what kind of piece it is
-    Jash - Check that piece is moving properly
-    Jash - Check if it's capturing anything/is it capturing its own piece? 
-    Jash - Check if it's a mate (both sides)
-    Jash - Check if it's a checkmate (both sides)
+    - Check what kind of piece it is (Jash)
+    - Check that piece is moving properly (Jash)
+    - Check if it's capturing anything/is it capturing its own piece? (Jash)
+    - Check if it's a mate (both sides) (Jash)  ***
+    - Check if it's a checkmate (both sides) (Jash) ***
     - Check Edge cases: 
-        Joe - Moving onto space already occupied by own piece
-        Jash - Capturing pieces
-        Joe - Updating board table upon move
-        Joe - Win conditions, stalemate conditions
-        Jake - Check and checkmate conditions
-        Jake - Can't move into check
-        Jake - Pawn promotion
-        Jake - En Passant
-        Jake - Castling (queen and king side)
+        - Moving onto space already occupied by own piece (Joe)
+        - Capturing pieces (Jash)
+        - Updating board table upon move (Joe)
+        - Win conditions, stalemate conditions (Joe)
+        - Check and checkmate conditions (Jake) ***
+        - Can't move into check (Jake) ***
+        - Pawn promotion (Jake)
+        - En Passant (Caitlyn)
+        - Castling (queen and king side) (Jake)
         - More...
     - Send message if any error, invalidity 
-    - Update board
+    - Update board (Caitlyn)
     - Switch player 
