@@ -7,6 +7,7 @@ def test_not_moving_piece(): # click on piece and click again on same piece (no 
     pass
 
 def test_capture_piece():
+    # first commit to this
     pass
 
 def test_blocked_move(): # attempting to move onto tile that has same color piece already
