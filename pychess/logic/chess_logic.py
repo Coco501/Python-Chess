@@ -1,3 +1,9 @@
+class Piece:
+    def __init__(self):
+        self.number_of_moves = 0 
+
+
+
 class ChessLogic:
     def __init__(self):
         """
@@ -54,7 +60,10 @@ class ChessLogic:
         #   if opponent piece, capture (append x to denote capture in extended chess notation)
         #   if own piece, invalid move 
         # check if moving put user into check, if it did, invalid move
-        # 
+        # check if opponent is now in checkmate, if they are, change game state to win
+        # increment number of moves for piece
+        # update board state
+        # change to other players turn
         pass
 
         '''
