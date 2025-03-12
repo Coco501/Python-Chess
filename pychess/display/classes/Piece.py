@@ -22,5 +22,5 @@ class Piece:
             "q": "queen",
             "k": "king"
         }
-        self.img = pygame.image.load(os.path.join("display/imgs/", f"{color}_{piece_map[piece]}.png"))
+        self.img = pygame.image.load(os.path.join("pychess/display/imgs/", f"{color}_{piece_map[piece]}.png"))
         self.img = pygame.transform.scale(self.img, (tile_width - 10, tile_height - 10))
