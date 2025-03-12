@@ -115,6 +115,7 @@ class ChessLogic:
 
 
     def move_knight(self, start_tile: str, target_tile: str) -> bool:
+        print("Moving Knight")
         pass
 
     def move_bishop(self, start_tile: str, target_tile: str) -> bool:
