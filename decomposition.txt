@@ -8,23 +8,24 @@ Joe - Valid/invalid moves for all pieces
 Steps: 
 - Set the board
 - Get move
-- Is valid move?
-    - Check what kind of piece it is (Jash)
-    - Check that piece is moving properly (Jash)
-    - Check if it's capturing anything/is it capturing its own piece? (Jash)
-    - Check if it's a mate (both sides) (Jash)  ***
-    - Check if it's a checkmate (both sides) (Jash) ***
-    - Check Edge cases: 
-        - Moving onto space already occupied by own piece (Joe)
-        - Capturing pieces (Jash)
-        - Updating board table upon move (Joe)
-        - Win conditions, stalemate conditions (Joe)
-        - Check and checkmate conditions (Jake) ***
-        - Can't move into check (Jake) ***
-        - Pawn promotion (Jake)
-        - En Passant (Caitlyn)
-        - Castling (queen and king side) (Jake)
-        - More...
-    - Send message if any error, invalidity 
+- Play Move (Caitlyn)
+    - Is valid move?
+        - Check what kind of piece it is (Jash)
+        - Check that piece is moving properly (Jash)
+        - Check if it's capturing anything/is it capturing its own piece? (Jash)
+        - Check if it's a mate (both sides) (Jash)  ***
+        - Check if it's a checkmate (both sides) (Jake) ***
+        - Check Edge cases: 
+            - Moving onto space already occupied by own piece (Joe)
+            - Capturing pieces (Jash)
+            - Updating board table upon move (Joe)
+            - Win conditions, stalemate conditions (Joe)
+            - Check and checkmate conditions (Jake) ***
+            - Can't move into check (Jash) ***
+            - Pawn promotion (Jake)
+            - En Passant (Caitlyn)
+            - Castling (queen and king side) (Jake)
+            - More...
+        - Send message if any error, invalidity 
     - Update board (Caitlyn)
     - Switch player 
