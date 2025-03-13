@@ -36,6 +36,9 @@ class ChessLogic:
 			['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
 		]
         self.result = "" 
+		
+		# boolean value keeping track of whose turn it is, true = white's turn, false = black's turn
+		self.whoseTurn = true
 
     def play_move(self, move: str) -> str:
         """
@@ -140,3 +143,17 @@ class ChessLogic:
 
     def moved_to_check():
         pass
+
+	def own_piece_at_target(self, target_tile: str): -> bool:
+		if (self.whoseTurn == 1) # white's turn
+			# parse target tile into array indeces
+			if (self.board[target][tile].isUpper())
+				return true
+
+		if (self.whoseTurn == 0) # black's turn
+			if (self.board[target][tile].isLower())
+				return true
+
+		else 
+			return false	
+		
