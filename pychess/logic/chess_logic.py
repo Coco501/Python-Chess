@@ -200,6 +200,7 @@ class ChessLogic:
                 self.boardOfPieceInstances[target_row][target_col].numMoves += 1
                 self.boardOfPieceInstances[target_row][target_col].hasMoved = True
 
+                return (isPawnMoveAllowed, False, False, False)
 
                 # return False
         
