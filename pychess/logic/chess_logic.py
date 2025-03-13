@@ -164,10 +164,9 @@ class ChessLogic:
         if start_tile[0] == target_tile[0]:
             # check if the pawn is moving two squares forward
             if abs(int(start_tile[1]) - int(target_tile[1])) == 2:
-                print("moving two squares forward")
                 # determine if this is allowed
-                if(start_tile[1] != 2 and start_tile[1] != 7):
-                    print("invalid move")
+                if(boardOfPieceInstances[row][col].hasMoved == True):
+                    print("Can't move forward two squares after the first move")
                     isPawnMoveAllowed = False
                     
                              
@@ -185,8 +184,22 @@ class ChessLogic:
                 # determine if this is allowed
                 
                 
-            else:
-                print("invalid move")
+            if (isPawnMoveAllowed == True):
+                # make the move
+
+                # update the main board
+                self.board[target_row][target_col] = self.board[row][col]
+                self.board[row][col] = ''
+
+                # update the board of piece instances
+                self.boardOfPieceInstances[target_row][target_col] = self.boardOfPieceInstances[row][col]
+                self.boardOfPieceInstances[row][col] = None
+
+                # update the piece instance
+                self.boardOfPieceInstances[target_row][target_col].currPos = (target_col, target_row)
+                self.boardOfPieceInstances[target_row][target_col].numMoves += 1
+                self.boardOfPieceInstances[target_row][target_col].hasMoved = True
+
 
                 # return False
         
