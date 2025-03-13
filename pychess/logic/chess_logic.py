@@ -37,9 +37,31 @@ class ChessLogic:
 		]
         self.result = "" 
 
+
+    def make_move(move: str):
+        start_file = str[0] # Check the order of these. 
+        start_rank = str[1]
+        end_file = str[2]
+        end_rank = str[3]
+
+        start_row, start_col = chess_notation_to_indices(start_file, start_rank) ## CHECK HOW THE FUNCTION PARAMS ARE.  
+        end_row, end_col = chess_notation_to_indices(end_file, end_rank) ## CHECK HOW THE FUNCTION PARAMS ARE. 
+
+        captured_piece = self.board[]
+
+
+
     def play_move(self, move: str) -> str:
+        # parse_move()
+        # is_valid_move()
+        # chess_notation() # Should chess notation try to figure out what is happening, or get those values from before?
+        # Also make a function to get a piece from the board based on chess notation. 
+        make_move() # Update the board. 
+
+        
+
         """
-        Function to make a move if it is a valid move. This function is called everytime a move in made on the board
+        Function to make a move if it is a valid move. This function is called everytime a move is made on the board
 
         Args:
             move (str): The move which is proposed. The format is the following: starting_square}{ending_square}
