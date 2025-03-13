@@ -158,10 +158,6 @@ class ChessLogic:
         if self.board[target_row][target_col].isupper() == self.board[row][col].isupper():
             print("target tile has a piece of the same color... invalid move")
             
-
-        if abs(int(target_tile[1])) > 8 or abs(int(target_tile[1])) < 1:
-            print("target tile out of bounds... invalid move")
-            isPawnMoveAllowed = False
             
 
         # check if the pawn is moving forward properly
@@ -228,10 +224,16 @@ class ChessLogic:
 # creates an instance of ChessLogic
 gameLogic = ChessLogic()
 
-gameLogic.move_pawn("e2", "e4")  
-gameLogic.move_pawn("d2", "d3")  
-gameLogic.move_pawn("e7", "e5") 
-gameLogic.move_pawn("g7", "g6")  
-gameLogic.move_pawn("e2", "e1") 
-gameLogic.move_pawn("e2", "f2")  
-gameLogic.move_pawn("e7", "e9")  
+print("e1 to e4:", gameLogic.move_pawn("e2", "e4"))  # Valid: White pawn moves two squares forward from start
+print("d1 to d3:", gameLogic.move_pawn("d2", "d3"))  # Valid: White pawn moves one square forward
+print("e7 to e5:", gameLogic.move_pawn("e7", "e5"))  # Valid: Black pawn moves two squares forward
+print("g7 to g6:", gameLogic.move_pawn("g7", "g6"))  # Valid: Black pawn moves one square forward
+
+# Invalid Moves (Moving Backward or Sideways)
+print("e2 to e1:", gameLogic.move_pawn("e2", "e1"))  # Invalid: White pawn cannot move backward
+print("e2 to f2:", gameLogic.move_pawn("e2", "f2"))  # Invalid: Pawn cannot move sideways
+print("e7 to e9:", gameLogic.move_pawn("e7", "e9"))  # Invalid: Out of board bounds
+
+# Invalid Moves (Blocked Path)
+print("e2 to e4:", gameLogic.move_pawn("e2", "e4"))  # Valid first move
+print("e4 to e6:", gameLogic.move_pawn("e4", "e6"))  # Invalid: Pawn cannot jump over pieces
