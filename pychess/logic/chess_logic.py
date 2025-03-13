@@ -145,6 +145,8 @@ class ChessLogic:
         pass
 
 	def own_piece_at_target(self, target_tile: str): -> bool:
+		row, col = chess_notation_to_indeces(target_tile)
+
 		if (self.whoseTurn == 1) # white's turn
 			# parse target tile into array indeces
 			if (self.board[target][tile].isUpper())
@@ -157,3 +159,11 @@ class ChessLogic:
 		else 
 			return false	
 		
+	def chess_notation_to_indeces(self, tile: str): -> int, int:
+		file = tile[0]  # 'a'-'h'
+        rank = tile[1]  # '1'-'8'
+
+        col = ord(file) - ord('a')  # 0-7
+        row = 8 - int(rank)         # 0-7 (rank 1 = row 7)
+
+		return row, col
