@@ -38,16 +38,27 @@ class ChessLogic:
         self.result = "" 
 
 
-    def make_move(move: str):
+    def make_move(move: str, kingside_castle: bool, queenside_castle: bool):
         start_file = str[0] # Check the order of these. 
         start_rank = str[1]
         end_file = str[2]
         end_rank = str[3]
 
-        start_row, start_col = chess_notation_to_indices(start_file, start_rank) ## CHECK HOW THE FUNCTION PARAMS ARE.  
-        end_row, end_col = chess_notation_to_indices(end_file, end_rank) ## CHECK HOW THE FUNCTION PARAMS ARE. 
+        start_row, start_col = chess_notation_to_indices(start_file, start_rank) ## CHECK HOW THE FUNCTION PARAMS AND RETURNS ARE.  
+        end_row, end_col = chess_notation_to_indices(end_file, end_rank) ## CHECK HOW THE FUNCTION PARAMS AND RETURNS ARE. 
 
-        captured_piece = self.board[]
+        if kingside_castle == True:
+            #
+
+        if queenside_castle == True:
+            #
+
+        captured_piece = self.board[end_row][end_col] ## should put message here? 
+
+        # Move the piece. 
+        self.board[end_row][end_col] = self.board[start_row][start_col]
+        self.board[start_row][start_col] = ''
+        
 
 
 
