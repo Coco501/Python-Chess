@@ -25,6 +25,7 @@ class ChessLogic:
 
             '' - Game In Progress
         """
+        # board[row][col]
         self.board = [
 			['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
 			['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
@@ -38,26 +39,38 @@ class ChessLogic:
         self.result = "" 
 
 
-    def make_move(move: str, kingside_castle: bool, queenside_castle: bool):
-        start_file = str[0] # Check the order of these. 
-        start_rank = str[1]
-        end_file = str[2]
-        end_rank = str[3]
+    def update_board(move: str, kingside_castle: bool, queenside_castle: bool):
+        # CHECK HOW THE CAPTURED PIECE FUNCTION WORKS, OTHERWISE WE ARE OVERWRITING THE CAPTURED PIECE INFO. 
+        # Update the board. 
+        # capture: whether or not the move captured another piece. 
 
-        start_row, start_col = chess_notation_to_indices(start_file, start_rank) ## CHECK HOW THE FUNCTION PARAMS AND RETURNS ARE.  
-        end_row, end_col = chess_notation_to_indices(end_file, end_rank) ## CHECK HOW THE FUNCTION PARAMS AND RETURNS ARE. 
+        start_tile = str[0:2] # Check the order of these. 
+        end_tile = str[2:4]
 
-        if kingside_castle == True:
-            #
-
-        if queenside_castle == True:
-            #
-
-        captured_piece = self.board[end_row][end_col] ## should put message here? 
+        start_row, start_col = chess_notation_to_indices(start_tile) 
+        end_row, end_col = chess_notation_to_indices(end_tile) 
 
         # Move the piece. 
         self.board[end_row][end_col] = self.board[start_row][start_col]
         self.board[start_row][start_col] = ''
+
+        if kingside_castle == True:
+            # King as already moved. 
+            # Move the rook. 
+            self.board[end_row][end_col - 1] = self.board[start_row][start_col + 3]
+            self.board[start_row][start_col + 3] = ''
+
+        if queenside_castle == True:
+            # King as already moved. 
+            # Move the rook. 
+            self.board[end_row][end_col + 1] = self.board[start_row][start_col - 4]
+            self.board[start_row][start_col - 4] = ''
+
+        return
+        
+
+    def chess_notation(move: str):
+        notation = ""
         
 
 
