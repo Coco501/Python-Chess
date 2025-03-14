@@ -39,12 +39,12 @@ class ChessLogic:
         self.result = "" 
 
 
-    def update_board(move: str, kingside_castle: bool, queenside_castle: bool):
+    def update_board(self, move: str, kingside_castle: bool, queenside_castle: bool):
         # CHECK HOW THE CAPTURED PIECE FUNCTION WORKS, OTHERWISE WE ARE OVERWRITING THE CAPTURED PIECE INFO. 
         # Update the board. 
         # capture: whether or not the move captured another piece. 
 
-        start_tile = move[0:2] # Check the order of these. 
+        start_tile = move[0:2] 
         end_tile = move[2:4]
 
         start_row, start_col = chess_notation_to_indices(start_tile) 
@@ -69,7 +69,7 @@ class ChessLogic:
         return
         
 
-    def chess_notation(move: str, valid: bool, piece: object, capture: bool,
+    def chess_notation(self, move: str, valid: bool, piece: object, capture: bool,
                        kingside_castle: bool, queenside_castle: bool, pawn_prom: bool):
         # Format: {piece if not pawn}{starting pos}{x if capture}{ending pos}{=Q if promotion}
         notation = ""
@@ -97,6 +97,40 @@ class ChessLogic:
                 notation = notation + "=Q"
             
             return notation
+        
+
+    def move_rook(self, move: str) -> bool:
+        start_tile = move[0:2] 
+        end_tile = move[2:4]
+
+        start_row, start_col = chess_notation_to_indices(start_tile) 
+        end_row, end_col = chess_notation_to_indices(end_tile) 
+
+        # Check that the rook is moving only horizontally or vertically. 
+        # Either the start and end file must be the same or the start and end rank must be the same. 
+        if (start_row != end_row) and (start_col != end_col): 
+            return False
+        
+        # Check that the rook is not jumping over any pieces. 
+        # Doesn't check if it has captured a piece. 
+        if start_row == end_row: # Moving along a row, col changes. Board[var][const]. Board[rank][file]. Board[row][col]. 
+            if start_col - end_col > 0: 
+                direction = -1
+            else: 
+                direction = 1
+            for i in range(start_row + direction, end_row, direction):
+                if (self.board[start_row][i] != ''):
+                    return False
+        if start_col == end_col: # Moving along a col, row changes. 
+            if start_row - end_row > 0: 
+                direction = -1
+            else: 
+                direction = 1
+            for i in range(start_row + direction, end_row, direction):
+                if (self.board[i][start_col] != ''):
+                    return False
+        else: # Rook is moving properly. 
+            return True
 
 
 
