@@ -44,8 +44,8 @@ class ChessLogic:
         # Update the board. 
         # capture: whether or not the move captured another piece. 
 
-        start_tile = str[0:2] # Check the order of these. 
-        end_tile = str[2:4]
+        start_tile = move[0:2] # Check the order of these. 
+        end_tile = move[2:4]
 
         start_row, start_col = chess_notation_to_indices(start_tile) 
         end_row, end_col = chess_notation_to_indices(end_tile) 
@@ -69,9 +69,34 @@ class ChessLogic:
         return
         
 
-    def chess_notation(move: str):
+    def chess_notation(move: str, valid: bool, piece: object, capture: bool,
+                       kingside_castle: bool, queenside_castle: bool, pawn_prom: bool):
+        # Format: {piece if not pawn}{starting pos}{x if capture}{ending pos}{=Q if promotion}
         notation = ""
+
+        if valid == False:
+            return notation
         
+        elif kingside_castle == True:
+            return "0-0"
+        
+        elif queenside_castle == True: 
+            return "0-0-0"
+        
+        else: 
+            if (piece.piece_type != 'p') or (piece.piece_type != 'P'): 
+                # It is not a pawn. 
+                notation = notation + piece.piece_type # check that this is proper string. 
+            
+            if capture == True: 
+                notation = notation + move[0:2] + "x" + move[2:4]
+            else: # Nothing was captured. 
+                notation = notation + move
+
+            if pawn_prom == True: 
+                notation = notation + "=Q"
+            
+            return notation
 
 
 
