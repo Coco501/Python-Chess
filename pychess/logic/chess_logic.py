@@ -39,8 +39,7 @@ class ChessLogic:
         self.result = "" 
 
 
-    def update_board(self, move: str, kingside_castle: bool, queenside_castle: bool):
-        # CHECK HOW THE CAPTURED PIECE FUNCTION WORKS, OTHERWISE WE ARE OVERWRITING THE CAPTURED PIECE INFO. 
+    def update_board(self, move: str, kingside_castle: bool, queenside_castle: bool): # ADD THE EDGE CASE FOR EN PASSANT. 
         # Update the board. 
         # capture: whether or not the move captured another piece. 
 
@@ -99,7 +98,7 @@ class ChessLogic:
             return notation
         
 
-    def move_rook(self, move: str) -> bool:
+    def rook_movement(self, move: str) -> bool:
         start_tile = move[0:2] 
         end_tile = move[2:4]
 
@@ -133,7 +132,7 @@ class ChessLogic:
             return True
         
 
-    def move_bishop(self, move: str) -> bool:
+    def bishop_movement(self, move: str) -> bool:
         start_tile = move[0:2] 
         end_tile = move[2:4]
 
@@ -165,14 +164,25 @@ class ChessLogic:
                 return False
             
         return True
-        
+    
+    def queen_movement(self, move: str):
+        # The queen's can move in any direction, as long as it's in a straight line.
+        # Horizontal, vertical, and diagonal. Basically a combination of rook and bishop movements. 
+        hor_or_vert = self.rook_movement(self, move) # <- CHECK THIS SYNTAX. 
+        diag = self.bishop_movement(self, move)
+
+        # Queen is moving properly if it moves either like a rook or a bishop.
+        if (hor_or_vert or diag):
+            return True
+        else: 
+            return False
+
         
     def check_same_tile(self, move: str) -> bool:
         if (move[0:2] == move[2:4]):
             return False
         else:
             return True
-
 
 
     def play_move(self, move: str) -> str:
