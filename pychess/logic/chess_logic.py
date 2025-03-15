@@ -47,8 +47,8 @@ class ChessLogic:
         start_tile = move[0:2] 
         end_tile = move[2:4]
 
-        start_row, start_col = chess_notation_to_indices(start_tile) 
-        end_row, end_col = chess_notation_to_indices(end_tile) 
+        start_row, start_col = self.chess_notation_to_indices(start_tile) 
+        end_row, end_col = self.chess_notation_to_indices(end_tile) 
 
         # Move the piece. 
         self.board[end_row][end_col] = self.board[start_row][start_col]
@@ -103,8 +103,8 @@ class ChessLogic:
         start_tile = move[0:2] 
         end_tile = move[2:4]
 
-        start_row, start_col = chess_notation_to_indices(start_tile) 
-        end_row, end_col = chess_notation_to_indices(end_tile) 
+        start_row, start_col = self.chess_notation_to_indices(start_tile) 
+        end_row, end_col = self.chess_notation_to_indices(end_tile) 
 
         # Check that the rook is moving only horizontally or vertically. 
         # Either the start and end file must be the same or the start and end rank must be the same. 
@@ -121,7 +121,7 @@ class ChessLogic:
             for i in range(start_row + direction, end_row, direction):
                 if (self.board[start_row][i] != ''):
                     return False
-        if start_col == end_col: # Moving along a col, row changes. 
+        elif start_col == end_col: # Moving along a col, row changes. 
             if start_row - end_row > 0: 
                 direction = -1
             else: 
@@ -130,6 +130,47 @@ class ChessLogic:
                 if (self.board[i][start_col] != ''):
                     return False
         else: # Rook is moving properly. 
+            return True
+        
+
+    def move_bishop(self, move: str) -> bool:
+        start_tile = move[0:2] 
+        end_tile = move[2:4]
+
+        start_row, start_col = self.chess_notation_to_indices(start_tile) 
+        end_row, end_col = self.chess_notation_to_indices(end_tile) 
+
+        # Check that the bishop moved only diagonally. The distance moved horizontally should be
+        # the same as the distance moved vertically. 
+        dist_hor = abs(start_row - end_row)
+        dist_ver = abs(start_col - end_col)
+
+        if (dist_hor != dist_ver): # Bishop not moving diagonally properly. 
+            return False
+        
+        # Check that the bishop is not jumping over any pieces. 
+        if start_col - end_col > 0: # CHECK THESE. 
+            direction_hor = -1
+        else: 
+            direction_hor = 1
+
+        if start_row - end_row > 0: 
+            direction_ver = -1
+        else: 
+            direction_ver = 1
+
+        for i,j in zip(range(start_col + direction_hor, end_col, direction_hor), 
+                       range(start_row + direction_ver, end_row, direction_ver)):
+            if (self.board[j][i] != ''):
+                return False
+            
+        return True
+        
+        
+    def check_same_tile(self, move: str) -> bool:
+        if (move[0:2] == move[2:4]):
+            return False
+        else:
             return True
 
 
