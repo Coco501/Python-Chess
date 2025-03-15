@@ -39,7 +39,7 @@ class ChessLogic:
         self.result = "" 
 
 
-    def update_board(self, move: str, kingside_castle: bool, queenside_castle: bool): # ADD THE EDGE CASE FOR EN PASSANT. 
+    def update_board(self, move: str, kingside_castle: bool, queenside_castle: bool, en_passant: bool): 
         # Update the board. 
         # capture: whether or not the move captured another piece. 
 
@@ -65,6 +65,11 @@ class ChessLogic:
             self.board[end_row][end_col + 1] = self.board[start_row][start_col - 4]
             self.board[start_row][start_col - 4] = ''
 
+        if en_passant == True:
+            # The pawn has been moved. 
+            # Must remove the captured pawn from the board. 
+            self.board[start_row][end_col] = ''
+
         return
         
 
@@ -85,7 +90,7 @@ class ChessLogic:
         else: 
             if (piece.piece_type != 'p') or (piece.piece_type != 'P'): 
                 # It is not a pawn. 
-                notation = notation + piece.piece_type # check that this is proper string. 
+                notation = notation + piece.piece_type # check that this is proper string. THIS SHOULD BE LOWERCASE, FIX THIS!!!!
             
             if capture == True: 
                 notation = notation + move[0:2] + "x" + move[2:4]
@@ -96,6 +101,14 @@ class ChessLogic:
                 notation = notation + "=Q"
             
             return notation
+        
+    
+    def dir_increment_decrement(start: int, end: int):
+        # Function to decide if we increment or decrement from start to end. 
+        if start - end > 0:
+            return -1 
+        else:
+            return 1
         
 
     def rook_movement(self, move: str) -> bool:
@@ -113,24 +126,24 @@ class ChessLogic:
         # Check that the rook is not jumping over any pieces. 
         # Doesn't check if it has captured a piece. 
         if start_row == end_row: # Moving along a row, col changes. Board[var][const]. Board[rank][file]. Board[row][col]. 
-            if start_col - end_col > 0: 
-                direction = -1
-            else: 
-                direction = 1
+
+            direction = self.dir_increment_decrement(start_col, end_col)
+            
             for i in range(start_row + direction, end_row, direction):
                 if (self.board[start_row][i] != ''):
                     return False
+                
         elif start_col == end_col: # Moving along a col, row changes. 
-            if start_row - end_row > 0: 
-                direction = -1
-            else: 
-                direction = 1
+
+            direction = self.dir_increment_decrement(start_row, end_row)
+
             for i in range(start_row + direction, end_row, direction):
                 if (self.board[i][start_col] != ''):
                     return False
+                
         else: # Rook is moving properly. 
             return True
-        
+
 
     def bishop_movement(self, move: str) -> bool:
         start_tile = move[0:2] 
@@ -148,15 +161,8 @@ class ChessLogic:
             return False
         
         # Check that the bishop is not jumping over any pieces. 
-        if start_col - end_col > 0: # CHECK THESE. 
-            direction_hor = -1
-        else: 
-            direction_hor = 1
-
-        if start_row - end_row > 0: 
-            direction_ver = -1
-        else: 
-            direction_ver = 1
+        direction_hor = self.dir_increment_decrement(start_col, end_col)
+        direction_ver = self.dir_increment_decrement(start_row, end_row)
 
         for i,j in zip(range(start_col + direction_hor, end_col, direction_hor), 
                        range(start_row + direction_ver, end_row, direction_ver)):
@@ -165,6 +171,7 @@ class ChessLogic:
             
         return True
     
+
     def queen_movement(self, move: str):
         # The queen's can move in any direction, as long as it's in a straight line.
         # Horizontal, vertical, and diagonal. Basically a combination of rook and bishop movements. 
