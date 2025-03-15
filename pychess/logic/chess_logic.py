@@ -147,69 +147,93 @@ class ChessLogic:
         target_col = ord(target_file) - ord('a')  # 0-7
         target_row = 8 - int(target_rank)         # 0-7 (rank 1 = row 7)
 
+        moveForward = self.make_sure_piece_is_moving_forward(row, col, target_row)
+
         if self.board[row][col] not in ('P', 'p'):
             print("Not a pawn... invalid move")
             isPawnMoveAllowed = False
             return (isPawnMoveAllowed, False, False, False)
-
             # return False
-        
+
         # make sure the target tile doesn't already have a piece of the same color
-        if self.board[target_row][target_col].isupper() == self.board[row][col].isupper():
-            print("target tile has a piece of the same color... invalid move")
-            
-            
+        if self.board[target_row][target_col] != '': 
+            if self.boardOfPieceInstances[target_row][target_col].piece_color == self.boardOfPieceInstances[row][col].piece_color:
+                isPawnMoveAllowed = False
 
         # check if the pawn is moving forward properly
-        if start_tile[0] == target_tile[0]:
+        if col == target_col:
             # check if the pawn is moving two squares forward
-            if abs(int(start_tile[1]) - int(target_tile[1])) == 2:
+            if abs(row - target_row) == 2:
                 # determine if this is allowed
-                if(boardOfPieceInstances[row][col].hasMoved == True):
+                if(self.boardOfPieceInstances[row][col].hasMoved == True):
                     print("Can't move forward two squares after the first move")
                     isPawnMoveAllowed = False
                     
                              
                 
             # check if the pawn is moving one square forward
-            if abs(int(start_tile[1]) - int(target_tile[1])) == 1:
-                print("moving one square forward")
-                # make sure it is moving forward and not backward
-                if self.boardOfPieceInstances[row][col].piece_color == "black" and int(row) < int(target_row):
-                    print("invalid move")
+            if abs(row - target_row) == 1:
+                if moveForward == False:
                     isPawnMoveAllowed = False
-                if self.boardOfPieceInstances[row][col].piece_color == "white" and int(row) > int(target_row):
-                    print("invalid move")
-                    isPawnMoveAllowed = False
+                else:
+                    isPawnMoveAllowed = True
+                
+        # could be a capture
+        if abs(col - target_col) == 1:
+            if moveForward == False:
+                isPawnMoveAllowed = False
+
+            # check if the pawn is moving diagonally
+            if abs(row - target_row) == 1:
                 # determine if this is allowed
+                if self.board[target_row][target_col] == '':
+                    print("No piece to capture")
+                    isPawnMoveAllowed = False
+                else:
+                    isPawnMoveAllowed = True
                 
-                
-            if (isPawnMoveAllowed == True):
-                # make the move
+                     
+        # Handle moving logic after determining that the move is valid    
+        if (isPawnMoveAllowed == True):
+            # make the move
 
-                # update the main board
-                self.board[target_row][target_col] = self.board[row][col]
-                self.board[row][col] = ''
+            # update the main board
+            self.board[target_row][target_col] = self.board[row][col]
+            self.board[row][col] = ''
 
-                # update the board of piece instances
-                self.boardOfPieceInstances[target_row][target_col] = self.boardOfPieceInstances[row][col]
-                self.boardOfPieceInstances[row][col] = None
+            # update the board of piece instances
+            self.boardOfPieceInstances[target_row][target_col] = self.boardOfPieceInstances[row][col]
+            self.boardOfPieceInstances[row][col] = None
 
-                # update the piece instance
-                self.boardOfPieceInstances[target_row][target_col].currPos = (target_col, target_row)
-                self.boardOfPieceInstances[target_row][target_col].numMoves += 1
-                self.boardOfPieceInstances[target_row][target_col].hasMoved = True
+            # update the piece instance
+            self.boardOfPieceInstances[target_row][target_col].currPos = (target_col, target_row)
+            self.boardOfPieceInstances[target_row][target_col].numMoves += 1
+            self.boardOfPieceInstances[target_row][target_col].hasMoved = True
 
-                return (isPawnMoveAllowed, False, False, False)
+            # print the board
+            #for row in self.board:
+            #   print(row)
+            #print()
 
-                # return False
-        
-        
 
-        
+
+        return (isPawnMoveAllowed, False, False, False)
+
+        # return False
+     
         pass
         
+    def make_sure_piece_is_moving_forward(self, row, col, target_row) -> bool:
+        if self.boardOfPieceInstances[row][col].piece_color == "black" and int(row) < int(target_row):
+            isPawnMovingForward = False
+        if self.boardOfPieceInstances[row][col].piece_color == "white" and int(row) > int(target_row):
+            isPawnMovingForward = False
+        else:
+            isPawnMovingForward = True
 
+        return isPawnMovingForward
+
+        pass
     
     def move_knight(self, start_tile: str, target_tile: str) -> bool:
     
@@ -238,16 +262,6 @@ class ChessLogic:
 # creates an instance of ChessLogic
 gameLogic = ChessLogic()
 
-print("e1 to e4:", gameLogic.move_pawn("e2", "e4"))  # Valid: White pawn moves two squares forward from start
-print("d1 to d3:", gameLogic.move_pawn("d2", "d3"))  # Valid: White pawn moves one square forward
-print("e7 to e5:", gameLogic.move_pawn("e7", "e5"))  # Valid: Black pawn moves two squares forward
-print("g7 to g6:", gameLogic.move_pawn("g7", "g6"))  # Valid: Black pawn moves one square forward
-
-# Invalid Moves (Moving Backward or Sideways)
-print("e2 to e1:", gameLogic.move_pawn("e2", "e1"))  # Invalid: White pawn cannot move backward
-print("e2 to f2:", gameLogic.move_pawn("e2", "f2"))  # Invalid: Pawn cannot move sideways
-print("e7 to e9:", gameLogic.move_pawn("e7", "e9"))  # Invalid: Out of board bounds
-
-# Invalid Moves (Blocked Path)
-print("e2 to e4:", gameLogic.move_pawn("e2", "e4"))  # Valid first move
-print("e4 to e6:", gameLogic.move_pawn("e4", "e6"))  # Invalid: Pawn cannot jump over pieces
+print("e2 to e4:", gameLogic.move_pawn("e2", "e4"))  # Valid: White pawn moves two squares forward from start
+print("d7 to d5:", gameLogic.move_pawn("d7", "d5"))
+print("e4 to d5:", gameLogic.move_pawn("e4", "d5"))  # Valid: White pawn captures black pawn
