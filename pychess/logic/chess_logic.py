@@ -74,11 +74,13 @@ class ChessLogic:
         
 
     def chess_notation(self, move: str, valid: bool, piece: object, capture: bool,
-                       kingside_castle: bool, queenside_castle: bool, pawn_prom: bool):
+                       kingside_castle: bool, queenside_castle: bool, pawn_prom: bool) -> str:
         # Format: {piece if not pawn}{starting pos}{x if capture}{ending pos}{=Q if promotion}
+        # Everything should be lowercase except for '=Q' for promotion. 
         notation = ""
 
         if valid == False:
+            # Return empty string if the move is invalid. 
             return notation
         
         elif kingside_castle == True:
@@ -90,12 +92,12 @@ class ChessLogic:
         else: 
             if (piece.piece_type != 'p') or (piece.piece_type != 'P'): 
                 # It is not a pawn. 
-                notation = notation + piece.piece_type # check that this is proper string. THIS SHOULD BE LOWERCASE, FIX THIS!!!!
+                notation = notation + piece.piece_type.lower() # check that this is proper string. 
             
             if capture == True: 
-                notation = notation + move[0:2] + "x" + move[2:4]
+                notation = notation + move[0:2].lower() + "x" + move[2:4].lower()
             else: # Nothing was captured. 
-                notation = notation + move
+                notation = notation + move.lower()
 
             if pawn_prom == True: 
                 notation = notation + "=Q"
@@ -103,7 +105,7 @@ class ChessLogic:
             return notation
         
     
-    def dir_increment_decrement(start: int, end: int):
+    def dir_increment_decrement(start: int, end: int) -> int:
         # Function to decide if we increment or decrement from start to end. 
         if start - end > 0:
             return -1 
@@ -119,7 +121,9 @@ class ChessLogic:
         end_row, end_col = self.chess_notation_to_indices(end_tile) 
 
         # Check that the rook is moving only horizontally or vertically. 
-        # Either the start and end file must be the same or the start and end rank must be the same. 
+        # Either the start and end file must be the same or the start and end rank must be the same, but 
+        # can't both be true. 
+        # There is already another function to check that it is not staying in the same tile. 
         if (start_row != end_row) and (start_col != end_col): 
             return False
         
@@ -172,7 +176,7 @@ class ChessLogic:
         return True
     
 
-    def queen_movement(self, move: str):
+    def queen_movement(self, move: str) -> bool:
         # The queen's can move in any direction, as long as it's in a straight line.
         # Horizontal, vertical, and diagonal. Basically a combination of rook and bishop movements. 
         hor_or_vert = self.rook_movement(self, move) # <- CHECK THIS SYNTAX. 
@@ -185,21 +189,73 @@ class ChessLogic:
             return False
 
         
-    def check_same_tile(self, move: str) -> bool:
+    def is_same_tile(self, move: str) -> bool:
         if (move[0:2] == move[2:4]):
-            return False
-        else:
             return True
+        else:
+            return False
+        
+
+    def is_valid_capture(self, move: str) -> tuple[bool, bool]: # FINISH THIS HERE. 
+        pass
+
+    
+    def is_valid_move(self, move: str, piece: object): # FINISH THIS HERE. 
+        valid = True 
+        capture = False 
+        kingside_castle = False 
+        queenside_castle = False
+        pawn_prom = False
+        en_passant = False
+        game_over = False
+
+        # Checking general valid/invalid, not specific to piece type. 
+        valid = ((not self.is_same_tile(self, move)) and (self.own_piece_at_tile(self, move[0:2])) 
+                 and (not self.own_piece_at_tile(self, move[2:4])))
+        
+        if valid:
+            # Check if piece was captured. 
+            valid, capture = 
+
+        # TO ADD:
+        # DOES IT MAKE SENSE FOR THIS STEP TO COME FIRST? 
+        # Check that the starting tile is not empty, and that piece on the starting piece is your own piece. 
+        # Check if we've captured anything on the end tile, make sure that it is the opponent's piece. 
+
+        # piece =  # finish this here. 
+
+        match piece:
+            case 'p': # Pawn
+                valid = self.is_valid_pawn(self, move)
+                valid, capture = self.is_valid_capture(self, move)
+                if valid:
+                    pawn_prom = self.is_pawn_prom(self, move)
+                    en_passant = self.is_en_passant(self, move)
+            case 'n': # knight
+                return self.is_valid_knight()
 
 
     def play_move(self, move: str) -> str:
-        # parse_move()
-        # is_valid_move()
-        # chess_notation() # Should chess notation try to figure out what is happening, or get those values from before?
-        # Also make a function to get a piece from the board based on chess notation. 
-        make_move() # Update the board. 
+        # Initialize Booleans. 
+        valid = True            # Is the move valid? 
+        capture = False         # Did we capture another piece? 
+        kingside_castle = False 
+        queenside_castle = False
+        pawn_prom = False
+        en_passant = False
+        game_over = False      # Game is over when one side wins or there is a draw. 
 
-        
+        # parse_move() # Already done in the other functions. 
+
+        boolean_values = self.is_valid_move(self, move) # SHOULD RETURN SEVERAL BOOLEAN VALUES. 
+
+        notation = self.chess_notation(self, move, valid, piece, capture, kingside_castle, queenside_castle, pawn_prom)
+
+        if valid: 
+            self.update_board(self, move, kingside_castle, queenside_castle, en_passant) # Update the board. 
+
+        return notation
+
 
         """
         Function to make a move if it is a valid move. This function is called everytime a move is made on the board
