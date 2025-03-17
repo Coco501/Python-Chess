@@ -1,6 +1,6 @@
 class Piece:
     def __init__(self):
-        self.number_of_moves = 0 
+        self.number_of_moves = 0
 
 
 
@@ -35,7 +35,44 @@ class ChessLogic:
 			['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
 			['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
 		]
-        self.result = "" 
+        self.result = ""
+
+    def can_promote(self) -> bool:
+        """Check if a piece can promote after a move has been made"""
+        if "P" in self.board[0]:
+            return True
+
+        if "p" in self.board[-1]:
+            return True
+
+        return False
+
+    def player_in_check(self) -> bool:
+        # TODO:
+
+        return False
+
+    def player_in_checkmate(self) -> bool:
+        # TODO:
+
+        return False
+
+    def can_castle(self) -> bool:
+        # TODO: Check that the king doesn't move into check
+
+        # TODO: Check that the king hasn't moved in the game so far
+
+        # TODO: Check that the castling rook has not moved during the game
+        # We can do this with a bool saying "left_castle_has_moved", etc.
+
+        # Check that there is space for a long castle
+        if self.board[-1][:5] == ["R", "", "", "", "K"]:
+            return True
+
+        if self.board[-1][4:] == ["K", "", "", "R"]:
+            return True
+
+        return False
 
     def play_move(self, move: str) -> str:
         """
@@ -43,13 +80,13 @@ class ChessLogic:
 
         Args:
             move (str): The move which is proposed. The format is the following: starting_square}{ending_square}
-            
+
             i.e. e2e4 - This means that whatever piece is on E2 is moved to E4
 
         Returns:
             str: Extended Chess Notation for the move, if valid. Empty str if the move is invalid
         """
-        
+
         #Implement this
         # parse starting tile and destination tile into two variables
         # figure out if there is a piece on starting tile, if not, invalid move
@@ -58,7 +95,7 @@ class ChessLogic:
         # call respective function for that piece
         # if valid, check if destination already has a piece
         #   if opponent piece, capture (append x to denote capture in extended chess notation)
-        #   if own piece, invalid move 
+        #   if own piece, invalid move
         # check if moving put user into check, if it did, invalid move
         # check if opponent is now in checkmate, if they are, change game state to win
         # increment number of moves for piece
@@ -70,7 +107,7 @@ class ChessLogic:
         pseudocode:
             str start_tile = move. first two letters
             str target_tile = move. # last two letters
-            
+
             # get piece on start_tile
             piece = self.board[start_tile]
             # convert piece to lowercase so we can handle both white and black pieces
@@ -80,7 +117,7 @@ class ChessLogic:
                 case 'p': # pawn
                     if !move_pawn(self, start_tile, target_tile)
                         return '' # invalid move
-                
+
                 case 'n': # knight
                     if !move_knight(self, start_tile, target_tile)
                         return ''
@@ -88,15 +125,15 @@ class ChessLogic:
                 case 'b': # bishop
                     if !move_bishop(self, start_tile, target_tile)
                         return ''
-                
+
                 case 'r': # rook
                     if !move_rook(self, start_tile, target_tile)
                         return ''
-                
+
                 case 'q': # queen
                     if !move_queen(self, start_tile, target_tile)
                         return ''
-                
+
                 case 'k': # king
                     if !move_king(self, start_tile, target_tile)
                         return ''
@@ -108,9 +145,9 @@ class ChessLogic:
                 return ''   # player moved into check
         '''
 
-        
+
     # each move function returns true if the move is possible (only considering tiles)
-    # do not consider external factors like other pieces 
+    # do not consider external factors like other pieces
     # some functions return tuples of bools, for special cases like en passant, promotion, castling, etc.
     def move_pawn(self, start_tile: str, target_tile: str) -> tuple(bool, bool, bool, bool):
         pass
