@@ -35,8 +35,12 @@ class ChessLogic:
 			['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
 			['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
 		]
-        self.result = ""
-
+        
+        self.result = "" 
+		
+		# boolean value keeping track of whose turn it is, true = white's turn, false = black's turn
+        self.whoseTurn: bool = True
+        
     def can_promote(self) -> bool:
         """Check if a piece can promote after a move has been made"""
         if "P" in self.board[0]:
@@ -149,7 +153,7 @@ class ChessLogic:
     # each move function returns true if the move is possible (only considering tiles)
     # do not consider external factors like other pieces
     # some functions return tuples of bools, for special cases like en passant, promotion, castling, etc.
-    def move_pawn(self, start_tile: str, target_tile: str) -> tuple(bool, bool, bool, bool):
+    def move_pawn(self, start_tile: str, target_tile: str) -> tuple[bool, bool, bool, bool]:
         pass
         # handle capturing diagonally
         # handle en passant
@@ -161,7 +165,7 @@ class ChessLogic:
     def move_bishop(self, start_tile: str, target_tile: str) -> bool:
         pass
 
-    def move_rook(self, start_tile: str, target_tile: str) -> bool, bool:
+    def move_rook(self, start_tile: str, target_tile: str) -> tuple[bool, bool]:
         pass
         # call castling if inputs match castling tiles
         #   handle going through check while castling (king can not move into check while castling)
@@ -177,3 +181,40 @@ class ChessLogic:
 
     def moved_to_check():
         pass
+
+    def chess_notation_to_indices(self, tile: str) -> tuple[int, int]:
+        file = tile[0]  # 'a'-'h'
+        rank = tile[1]  # '1'-'8'
+
+        col = ord(file) - ord('a')  # 0-7
+        row = 8 - int(rank)         # 0-7 (rank 1 = row 7)
+
+        return row, col
+
+    def own_piece_at_tile(self, tile: str) -> bool:
+        # potential error, using isupper() or islower() on empty string '' or ' ' could raise error?
+        row, col = self.chess_notation_to_indices(tile)
+
+        if self.whoseTurn == True:  # white's turn
+            if self.board[row][col].isupper():
+                return True
+
+        elif self.whoseTurn == False:  # black's turn
+            if self.board[row][col].islower():
+                return True
+
+        return False  # default
+
+		
+    def opponent_piece_at_tile(self, tile: str) -> bool:
+        row, col = self.chess_notation_to_indices(tile)
+
+        if self.whoseTurn == True:  # white's turn
+            if self.board[row][col].islower():
+                return True
+
+        elif self.whoseTurn == False:  # black's turn
+            if self.board[row][col].isupper():
+                return True
+
+        return False # default
