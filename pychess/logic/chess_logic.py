@@ -112,8 +112,15 @@ class ChessLogic:
         else:
             return 1
         
+    
+    def is_same_tile(self, move: str) -> bool:
+        if (move[0:2] == move[2:4]):
+            return True
+        else:
+            return False
+        
 
-    def rook_movement(self, move: str) -> bool:
+    def rook_movement_valid(self, move: str) -> bool:
         start_tile = move[0:2] 
         end_tile = move[2:4]
 
@@ -149,7 +156,7 @@ class ChessLogic:
             return True
 
 
-    def bishop_movement(self, move: str) -> bool:
+    def bishop_movement_valid(self, move: str) -> bool:
         start_tile = move[0:2] 
         end_tile = move[2:4]
 
@@ -176,7 +183,7 @@ class ChessLogic:
         return True
     
 
-    def queen_movement(self, move: str) -> bool:
+    def queen_movement_valid(self, move: str) -> bool:
         # The queen's can move in any direction, as long as it's in a straight line.
         # Horizontal, vertical, and diagonal. Basically a combination of rook and bishop movements. 
         hor_or_vert = self.rook_movement(self, move) # <- CHECK THIS SYNTAX. 
@@ -188,19 +195,8 @@ class ChessLogic:
         else: 
             return False
 
-        
-    def is_same_tile(self, move: str) -> bool:
-        if (move[0:2] == move[2:4]):
-            return True
-        else:
-            return False
-        
-
-    def is_valid_capture(self, move: str) -> tuple[bool, bool]: # FINISH THIS HERE. 
-        pass
-
     
-    def is_valid_move(self, move: str, piece: object): # FINISH THIS HERE. 
+    def is_valid_move(self, move: str): # FINISH THIS HERE. 
         valid = True 
         capture = False 
         kingside_castle = False 
@@ -208,31 +204,58 @@ class ChessLogic:
         pawn_prom = False
         en_passant = False
         game_over = False
+        ## Need a var or bool for winner or draw? 
 
         # Checking general valid/invalid, not specific to piece type. 
+        # Start and end tile should not be the same, starting tile should have own piece, 
+        # ending tile should not have own piece. 
         valid = ((not self.is_same_tile(self, move)) and (self.own_piece_at_tile(self, move[0:2])) 
                  and (not self.own_piece_at_tile(self, move[2:4])))
         
         if valid:
-            # Check if piece was captured. 
-            valid, capture = 
+            # Check if piece was captured at end tile, and that it was the opponent's piece. 
+            capture = self.opponent_piece_at_tile(self, move[2:4])
 
-        # TO ADD:
-        # DOES IT MAKE SENSE FOR THIS STEP TO COME FIRST? 
-        # Check that the starting tile is not empty, and that piece on the starting piece is your own piece. 
-        # Check if we've captured anything on the end tile, make sure that it is the opponent's piece. 
+            # piece =  # FINISH THIS HERE
 
-        # piece =  # finish this here. 
+            # Checking piece specific valid/invalid. 
+            match piece: # <- MIGHT HAVE TO END UP USING IF STATEMENTS INSTEAD. 
+                case 'p': # Pawn 
+                    valid = self.is_valid_pawn()
 
-        match piece:
-            case 'p': # Pawn
-                valid = self.is_valid_pawn(self, move)
-                valid, capture = self.is_valid_capture(self, move)
-                if valid:
-                    pawn_prom = self.is_pawn_prom(self, move)
-                    en_passant = self.is_en_passant(self, move)
-            case 'n': # knight
-                return self.is_valid_knight()
+                    if valid:
+                        pawn_prom = self.is_pawn_prom()
+                        en_passant = self.is_en_passant()
+
+                case 'n': # knight
+                    valid = self.knight_movement_valid() # check
+                
+                case 'b': # bishop
+                    valid = self.bishop_movement_valid(self, move)
+                
+                case 'r': # rook
+                    valid = self.rook_movement_valid(self, move)
+                
+                case 'q': # queen
+                    valid = self.queen_movement_valid(self, move)
+                
+                case 'k': # king
+                    valid = self.king_movement_valid()
+
+                    if valid:
+                        kingside_castle = self.is_kingside_castle()
+                        queenside_castle = self.is_queenside_castle()
+
+            # Check that move does not leave own king in check. 
+            #####
+
+            # Check whether move places opponent's king in check. 
+            #####
+
+            # Check whether move places opponent's king in checkmate. 
+            #####
+
+        return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, game_over
 
 
     def play_move(self, move: str) -> str:
@@ -247,12 +270,16 @@ class ChessLogic:
 
         # parse_move() # Already done in the other functions. 
 
-        boolean_values = self.is_valid_move(self, move) # SHOULD RETURN SEVERAL BOOLEAN VALUES. 
+        valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, game_over = self.is_valid_move(self, move) 
 
         notation = self.chess_notation(self, move, valid, piece, capture, kingside_castle, queenside_castle, pawn_prom)
 
         if valid: 
             self.update_board(self, move, kingside_castle, queenside_castle, en_passant) # Update the board. 
+
+        # ADD CODE HERE TO UPDATE THE RESULT FIELD. 
+        if game_over:
+            pass
 
         return notation
 
