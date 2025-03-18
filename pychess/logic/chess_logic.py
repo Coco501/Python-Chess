@@ -424,17 +424,9 @@ class ChessLogic:
         # check if the starting tile is a pawn
         
         # Convert chess notation to board indices correctly
-        file = start_tile[0]  # 'a'-'h'
-        rank = start_tile[1]  # '1'-'8'
 
-        col = ord(file) - ord('a')  # 0-7
-        row = 8 - int(rank)         # 0-7 (rank 1 = row 7)
-
-        target_file = target_tile[0]  # 'a'-'h'
-        target_rank = target_tile[1]  # '1'-'8'
-
-        target_col = ord(target_file) - ord('a')  # 0-7
-        target_row = 8 - int(target_rank)         # 0-7 (rank 1 = row 7)
+        row, col = self.chess_notation_to_indices(start_tile)
+        target_row, target_col = self.chess_notation_to_indices(target_tile)
 
         moveForward = self.make_sure_piece_is_moving_forward(row, col, target_row)
 
@@ -485,19 +477,8 @@ class ChessLogic:
         # Handle moving logic after determining that the move is valid    
         if (isPawnMoveAllowed == True):
             # make the move
-
-            # update the main board
-            self.board[target_row][target_col] = self.board[row][col]
-            self.board[row][col] = ''
-
-            # update the board of piece instances
-            self.boardOfPieceInstances[target_row][target_col] = self.boardOfPieceInstances[row][col]
-            self.boardOfPieceInstances[row][col] = None
-
-            # update the piece instance
-            self.boardOfPieceInstances[target_row][target_col].currPos = (target_col, target_row)
-            self.boardOfPieceInstances[target_row][target_col].numMoves += 1
-            self.boardOfPieceInstances[target_row][target_col].hasMoved = True
+            self.update_board(start_tile, target_tile)
+            
 
             # print the board
             #for row in self.board:
@@ -506,7 +487,7 @@ class ChessLogic:
 
 
 
-        return (isPawnMoveAllowed, False, False, False)
+            return (isPawnMoveAllowed, False, False, False)
 
         # return False
 
@@ -524,6 +505,42 @@ class ChessLogic:
         pass
     
     def move_knight(self, start_tile: str, target_tile: str) -> bool:
+
+        isKnightMoveAllowed = True
+
+        row, col = self.chess_notation_to_indices(start_tile)
+        target_row, target_col = self.chess_notation_to_indices(target_tile)
+
+        if self.board[row][col] == '':
+            print("No piece at the starting position")
+            return False
+
+        # check if the starting tile is a knight
+        if self.boardOfPieceInstances[row][col].piece_type != 'n' and self.boardOfPieceInstances[row][col].piece_type != 'N':
+            print("Not a knight... invalid move")
+            isKnightMoveAllowed = False
+            return isKnightMoveAllowed
+
+        # check if the target tile doesn't already have a piece of the same color
+        if self.board[target_row][target_col] != '':
+            if self.boardOfPieceInstances[target_row][target_col].piece_color == self.boardOfPieceInstances[row][col].piece_color:
+                isKnightMoveAllowed = False
+        
+        # check for proper movement
+        if abs(row - target_row) == 2 and abs(col - target_col) == 1:
+            isKnightMoveAllowed = True
+        
+        elif abs(row - target_row) == 1 and abs(col - target_col) == 2:
+            isKnightMoveAllowed = True
+        
+        else:
+            isKnightMoveAllowed = False
+        
+        if (isKnightMoveAllowed == True):
+            # update the boards
+            self.update_board(start_tile, target_tile)
+            
+            return isKnightMoveAllowed
     
         pass
 
@@ -547,15 +564,6 @@ class ChessLogic:
     def moved_to_check():
         pass
 
-
-# creates an instance of ChessLogic
-gameLogic = ChessLogic()
-
-# jash testing purposes?
-print("e2 to e4:", gameLogic.move_pawn("e2", "e4"))  # Valid: White pawn moves two squares forward from start
-print("d7 to d5:", gameLogic.move_pawn("d7", "d5"))
-print("e4 to d5:", gameLogic.move_pawn("e4", "d5"))  # Valid: White pawn captures black pawn
-
     def chess_notation_to_indices(self, tile: str) -> tuple[int, int]:
         file = tile[0]  # 'a'-'h'
         rank = tile[1]  # '1'-'8'
@@ -563,7 +571,7 @@ print("e4 to d5:", gameLogic.move_pawn("e4", "d5"))  # Valid: White pawn capture
         col = ord(file) - ord('a')  # 0-7
         row = 8 - int(rank)         # 0-7 (rank 1 = row 7)
 
-        return row, col
+        return (row, col)
 
     def own_piece_at_tile(self, tile: str) -> bool:
         # potential error, using isupper() or islower() on empty string '' or ' ' could raise error?
@@ -580,6 +588,22 @@ print("e4 to d5:", gameLogic.move_pawn("e4", "d5"))  # Valid: White pawn capture
         return False  # default
 
 		
+    def update_board(self, tile: str, target_tile: str):
+        row, col = self.chess_notation_to_indices(tile)
+        target_row, target_col = self.chess_notation_to_indices(target_tile)
+        # update the main board
+        self.board[target_row][target_col] = self.board[row][col]
+        self.board[row][col] = ''
+
+        # update the board of piece instances
+        self.boardOfPieceInstances[target_row][target_col] = self.boardOfPieceInstances[row][col]
+        self.boardOfPieceInstances[row][col] = None
+
+        # update the piece instance
+        self.boardOfPieceInstances[target_row][target_col].currPos = (target_col, target_row)
+        self.boardOfPieceInstances[target_row][target_col].numMoves += 1
+        self.boardOfPieceInstances[target_row][target_col].hasMoved = True
+
     def opponent_piece_at_tile(self, tile: str) -> bool:
         row, col = self.chess_notation_to_indices(tile)
 
@@ -593,3 +617,12 @@ print("e4 to d5:", gameLogic.move_pawn("e4", "d5"))  # Valid: White pawn capture
 
         return False # default
 
+
+# creates an instance of ChessLogic
+gameLogic = ChessLogic()
+
+# jash testing purposes?
+print("e2 to e4:", gameLogic.move_pawn("e2", "e4"))  # Valid: White pawn moves two squares forward from start
+print("d7 to d5:", gameLogic.move_pawn("d7", "d5"))
+print("e4 to d5:", gameLogic.move_pawn("e4", "d5"))  # Valid: White pawn captures black pawn
+print("g1 to f3:", gameLogic.move_knight("g1", "f3"))
