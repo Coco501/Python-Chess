@@ -251,8 +251,8 @@ class ChessLogic:
         else: 
             return False
 
-    
-    def is_valid_move(self, move: str): # FINISH THIS HERE. 
+    # supposed to take in 3 args not 2
+    def is_valid_move(self, start_pos: str, end_pos: str, move: str): # FINISH THIS HERE. 
         valid = True 
         capture = False 
         kingside_castle = False 
@@ -277,14 +277,14 @@ class ChessLogic:
             # Checking piece specific valid/invalid. 
             match piece: # <- MIGHT HAVE TO END UP USING IF STATEMENTS INSTEAD. 
                 case 'p': # Pawn 
-                    valid = self.is_valid_pawn()
+                    valid = self.move_pawn()
 
                     if valid:
                         pawn_prom = self.is_pawn_prom()
                         en_passant = self.is_en_passant()
 
                 case 'n': # knight
-                    valid = self.knight_movement_valid() # check
+                    valid = self.move_knight() # check
                 
                 case 'b': # bishop
                     valid = self.bishop_movement_valid(self, move)
@@ -545,6 +545,8 @@ class ChessLogic:
         pass
 
     def move_bishop(self, start_tile: str, target_tile: str) -> bool:
+        
+
         pass
 
     def move_rook(self, start_tile: str, target_tile: str) -> tuple[bool, bool]:
