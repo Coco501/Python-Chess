@@ -99,7 +99,7 @@ class ChessLogic:
             # Check if the pawn is moving one square forward
             if abs(row - target_row) == 1:
                 isPawnMoveAllowed = True
-                pawn_prom = self.pawn_promotion(self, row, col, target_row, target_col)
+                pawn_prom = self.pawn_promotion(row, col, target_row, target_col)
 
             # If pawn is moving two steps forward, it must be its first move.
             if abs(row - target_row) == 2:
@@ -118,7 +118,7 @@ class ChessLogic:
                     isPawnMoveAllowed = True
 
                 else: # End tile doesn't have a piece on it. Allowed for en passant.
-                    en_passant = self.is_en_passant(self, move)
+                    en_passant = self.is_en_passant(move)
                     capture = True
 
                     if en_passant:
@@ -146,11 +146,11 @@ class ChessLogic:
         # Check that the rook is not jumping over any pieces.
         # Doesn't check if it has captured a piece.
         if start_row == end_row: # Moving along a row, col changes. Board[var][const]. Board[rank][file]. Board[row][col].
-            if self.pieces_between_cols(self, start_col, end_col, start_row):
+            if self.pieces_between_cols(start_col, end_col, start_row):
                 return False
 
         elif start_col == end_col: # Moving along a col, row changes.
-            if self.pieces_between_rows(self, start_row, end_row, start_col):
+            if self.pieces_between_rows(start_row, end_row, start_col):
                 return False
 
         else: # Rook is moving properly.
@@ -194,7 +194,7 @@ class ChessLogic:
             return False
 
         # Check that the bishop is not jumping over any pieces.
-        if self.pieces_along_diagonal(self, start_row, end_row, start_col, end_col):
+        if self.pieces_along_diagonal(start_row, end_row, start_col, end_col):
             return False
 
         return True
@@ -203,8 +203,8 @@ class ChessLogic:
     def queen_movement_valid(self, move: str) -> bool:
         # The queen's can move in any direction, as long as it's in a straight line.
         # Horizontal, vertical, and diagonal. Basically a combination of rook and bishop movements.
-        hor_or_vert = self.rook_movement(self, move)
-        diag = self.bishop_movement(self, move)
+        hor_or_vert = self.rook_movement(move)
+        diag = self.bishop_movement(move)
 
         # Queen is moving properly if it moves either like a rook or a bishop.
         if (hor_or_vert or diag):
@@ -239,7 +239,7 @@ class ChessLogic:
 
         elif (change_in_rows == 0 and change_in_cols == 2):
             # There is potentially a castle.
-            valid, kingside_castle, queenside_castle = self.is_valid_castle(self, start_row, start_col, end_row, end_col)
+            valid, kingside_castle, queenside_castle = self.is_valid_castle(start_row, start_col, end_row, end_col)
 
         else:
             valid = False
@@ -281,7 +281,7 @@ class ChessLogic:
             return False
 
         # Find direction our pawn is moving in terms of rows. Is it moving up or down rows?
-        direction = self.dir_increment_decrement(self, start_row, end_row)
+        direction = self.dir_increment_decrement(start_row, end_row)
 
         # Check that in the previous move, opponent's pawn moved forward into the right position.
         # The previous start and end columns should be the same as the current end column.
@@ -315,12 +315,12 @@ class ChessLogic:
         # Check that there are no pieces between the king and the rook.
         # Check kingside:
         if (end_col - start_col > 0):
-            if self.pieces_between_cols(self, start_col, 7, start_row):
+            if self.pieces_between_cols(start_col, 7, start_row):
                 return valid, kingside_castle, queenside_castle
             kingside_castle = True
 
         else: # Check queenside.
-            if self.pieces_between_cols(self, start_col, 0, start_row):
+            if self.pieces_between_cols(start_col, 0, start_row):
                 return valid, kingside_castle, queenside_castle
             queenside_castle = True
 
@@ -620,29 +620,29 @@ class ChessLogic:
         # Start and end tile should not be the same, starting tile should have own piece,
         # ending tile should not have own piece.
         # The own_piece_at_tile function should take care of checking that the starting tile is not empty.
-        valid = ((not self.is_same_tile(self, move)) and (self.own_piece_at_tile(self, move[0:2]))
-                 and (not self.own_piece_at_tile(self, move[2:4])))
+        valid = ((not self.is_same_tile(move)) and (self.own_piece_at_tile(move[0:2]))
+                 and (not self.own_piece_at_tile(move[2:4])))
 
         if valid:
             # Check if piece was captured at end tile, and that it was the opponent's piece.
             # This doesn't cover the en passant edge case.                                      <- MAKE SURE TO COVER THIS IN EN PASSANT.
-            capture = self.opponent_piece_at_tile(self, move[2:4])
+            capture = self.opponent_piece_at_tile(move[2:4])
 
             # Checking piece specific valid/invalid.
-            if piece == 'p': # Pawn
-                valid, capture, pawn_prom, en_passant = self.move_pawn(self, move, capture)
+            if piece == 'p': # pawn
+                valid, capture, pawn_prom, en_passant = self.move_pawn(move, capture)
 
             elif piece == 'r': # rook
-                valid = self.rook_movement_valid(self, move)
+                valid = self.rook_movement_valid(move)
 
             elif piece == 'n': # knight
                 valid = self.knight_movement_valid() # check
 
             elif piece == 'b': # bishop
-                valid = self.bishop_movement_valid(self, move)
+                valid = self.bishop_movement_valid(move)
 
             elif piece == 'q': # queen
-                valid = self.queen_movement_valid(self, move)
+                valid = self.queen_movement_valid(move)
 
             elif piece == 'k': # king
                 valid, kingside_castle, queenside_castle = self.king_movement_valid()
@@ -692,15 +692,15 @@ class ChessLogic:
         # parse_move() # Already done in the other functions.
 
         # Check if move is valid.
-        valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, game_over, draw = self.is_valid_move(self, move)
+        valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, game_over, draw = self.is_valid_move(move)
 
         # Write out the extended chess notation.
-        notation = self.chess_notation(self, move, valid, capture, kingside_castle, queenside_castle, pawn_prom)
+        notation = self.chess_notation(move, valid, capture, kingside_castle, queenside_castle, pawn_prom)
 
         # If the move is valid, update the board and results.
         if valid:
-            self.update_board(self, move, kingside_castle, queenside_castle, en_passant) # Update the board.
-            self.update_piece_and_boardOfPieceInstances(self, move, kingside_castle, queenside_castle, en_passant)
+            self.update_board(move, kingside_castle, queenside_castle, en_passant) # Update the board.
+            self.update_piece_and_boardOfPieceInstances(move, kingside_castle, queenside_castle, en_passant)
 
             # Update the previous move to move that was just played.
             self.prev_move_played = move
