@@ -77,8 +77,11 @@ class ChessLogic:
     # each move function returns true if the move is possible (only considering tiles)
     # do not consider external factors like other pieces
     # some functions return tuples of bools, for special cases like en passant, promotion, castling, etc.
-    def move_pawn(self, move: str, capture: bool) -> tuple[bool, bool, bool, bool]:
+    def move_pawn(self, move: str, piece_on_end_tile: bool) -> tuple[bool, bool, bool]:
         isPawnMoveAllowed = True
+        pawn_prom = False
+        en_passant = False
+        capture = piece_on_end_tile
         
         # Convert chess notation to board indices.
         start_tile = move[0:2] 
@@ -86,37 +89,44 @@ class ChessLogic:
         row, col = self.chess_notation_to_indices(start_tile) 
         target_row, target_col = self.chess_notation_to_indices(end_tile) 
 
-        # Checks if pawn is moving forward. 
+        # Checks if pawn is moving forward. Can't move backwards!
         moveForward = self.is_pawn_moving_forward(row, col, target_row)
         if (not moveForward):
             return False
-
+        
         # Check if the pawn is moving forward either one or two squares. 
         if col == target_col:
-            # If pawn is moving two steps forward, it must be its first move. 
-            if abs(row - target_row) == 2:
-                # determine if this is allowed
-                if(self.boardOfPieceInstances[row][col].hasMoved == True):
-                    isPawnMoveAllowed = False
-           
             # Check if the pawn is moving one square forward
             if abs(row - target_row) == 1:
                 isPawnMoveAllowed = True
+                pawn_prom = self.pawn_promotion(self, row, col, target_row, target_col)
+
+            # If pawn is moving two steps forward, it must be its first move. 
+            if abs(row - target_row) == 2:
+                if(self.boardOfPieceInstances[row][col].hasMoved == True):
+                    isPawnMoveAllowed = False
+
+            # For a pawn moving forward, make sure that there is nothing on the end tile or in between. 
+            if piece_on_end_tile or self.pieces_between_rows(row, target_row, col):
+                isPawnMoveAllowed = False
                 
         # Check if the pawn is moving diagonally. Can do so for capture. 
         if abs(row - target_row) == 1 and abs(col - target_col) == 1:
-                if capture == True:     
+                if piece_on_end_tile == True:     
                     # End tile had opponent's piece. 
                     # Correctly moved diagonal to capture. 
                     isPawnMoveAllowed = True
 
-                else: # Capture == False. End tile doesn't have a piece on it. Allowed for en passant. 
-                    if self.is_en_passant(self, move):
+                else: # End tile doesn't have a piece on it. Allowed for en passant. 
+                    en_passant = self.is_en_passant(self, move)
+                    capture = True
+
+                    if en_passant: 
                         isPawnMoveAllowed = True
                     else: # Not en passant and no piece was captured. 
                         isPawnMoveAllowed = False
 
-        return (isPawnMoveAllowed, False, False, False)
+        return isPawnMoveAllowed, capture, pawn_prom, en_passant
 
 
     def rook_movement_valid(self, move: str) -> bool:
@@ -226,15 +236,18 @@ class ChessLogic:
     # ----------------------------------------------------------------- #
     # Edge Cases ------------------------------------------------------ #
 
-    def can_promote(self) -> bool:
-        """Check if a piece can promote after a move has been made"""
-        if "P" in self.board[0]:
-            return True
+    def pawn_promotion(self, start_row: int, start_col: int, end_row: int, end_col: int) -> bool:
+        if self.board[start_row][start_col] == 'P': # White pawn. 
+            if end_row == 0: 
+                return True
+            else: 
+                return False
 
-        if "p" in self.board[-1]:
-            return True
-
-        return False
+        else: # Black pawn
+            if end_row == 7:
+                return True
+            else: 
+                return False
     
 
     def is_en_passant(self, move: str) -> bool:
@@ -260,7 +273,6 @@ class ChessLogic:
             if start_row == prev_end_row:
                 if prev_start_row == end_row + direction:
                     return True
-                
         else:
             return False
 
@@ -424,6 +436,7 @@ class ChessLogic:
         
         return False
     
+
     def pieces_along_diagonal(self, start_row: int, end_row: int, start_col: int, end_col: int) -> bool:
         # Checks if there are any pieces in between two tiles along a diagonal. 
         direction_hor = self.dir_increment_decrement(start_col, end_col)
@@ -504,6 +517,8 @@ class ChessLogic:
             # Must remove the captured pawn from the board. 
             self.board[start_row][end_col] = ''
 
+        # TODO: Add if statement for pawn promotion. 
+
         return
         
 
@@ -572,18 +587,12 @@ class ChessLogic:
 
             # Checking piece specific valid/invalid. 
             if piece == 'p': # Pawn 
-
-                valid, en_passant = self.move_pawn(self, move, capture)
-
-                if valid:
-                    pawn_prom = self.is_pawn_prom()
-                    en_passant = self.is_en_passant()
+                valid, capture, pawn_prom, en_passant = self.move_pawn(self, move, capture)
 
             elif piece == 'r': # rook
                 valid = self.rook_movement_valid(self, move)
 
             elif piece == 'n': # knight
-
                 valid = self.knight_movement_valid() # check
 
             elif piece == 'b': # bishop
