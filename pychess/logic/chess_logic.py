@@ -333,6 +333,8 @@ class ChessLogic:
                 # TODO: Check the other color's pieces, not the lower case ones
                 if piece.piece_type in ["q", "r"]:
                     return True
+                else:
+                    rank_found_piece = True
 
         # Check the file
         file_found_piece = False
@@ -344,6 +346,8 @@ class ChessLogic:
                 # TODO: Check the other color's pieces, not the lower case ones
                 if piece.piece_type in ["q", "r"]:
                     return True
+                else:
+                    file_found_piece = True
 
             # Start at king, and increment outwards.
                 # Check along the vertical until we hit a piece.
