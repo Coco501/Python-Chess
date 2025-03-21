@@ -636,7 +636,7 @@ class ChessLogic:
                 valid = self.rook_movement_valid(move)
 
             elif piece == 'n': # knight
-                valid = self.knight_movement_valid() # check
+                valid = self.knight_movement_valid(move) # check
 
             elif piece == 'b': # bishop
                 valid = self.bishop_movement_valid(move)
