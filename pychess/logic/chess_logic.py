@@ -3,10 +3,9 @@ class Piece:
     def __init__(self, piece_type, piece_color, currPos):
         self.piece_type = piece_type
         self.piece_color = piece_color
-        self.currPos = currPos
-        self.numMoves = numMoves = 0
+        self.currPos = currPos # REMOVE THIS, NOT NECCESSARY. 
         self.hasMoved = hasMoved = False
-        self.number_of_moves = 0 # DUPLICATE, replace all instances with numMoves
+
 
 class ChessLogic:
     def __init__(self):
@@ -53,18 +52,32 @@ class ChessLogic:
         ]
 
         self.result = "" 
+
+        self.prev_move_played = "" # Holds the previous move. 
 		
-		# boolean value keeping track of whose turn it is, true = white's turn, false = black's turn
+		# Boolean value keeping track of whose turn it is, true = white's turn, false = black's turn
         self.whoseTurn: bool = True
 
 
     # ----------------------------------------------------------------- #
     # Functions related to logic for specific pieces ------------------ #
 
+    def is_pawn_moving_forward(self, row, col, target_row) -> bool:
+        if self.boardOfPieceInstances[row][col].piece_color == "black" and int(row) < int(target_row):
+            isPawnMovingForward = False
+
+        if self.boardOfPieceInstances[row][col].piece_color == "white" and int(row) > int(target_row):
+            isPawnMovingForward = False
+
+        else:
+            isPawnMovingForward = True
+
+        return isPawnMovingForward
+
     # each move function returns true if the move is possible (only considering tiles)
     # do not consider external factors like other pieces
     # some functions return tuples of bools, for special cases like en passant, promotion, castling, etc.
-    def move_pawn(self, start_tile: str, target_tile: str) -> tuple[bool, bool, bool, bool]:
+    def move_pawn(self, move: str) -> tuple[bool, bool, bool, bool]:
         isPawnMoveAllowed = True
 
         #'e2' on board is board[6][4]
@@ -73,30 +86,13 @@ class ChessLogic:
         # check if the starting tile is a pawn
         
         # Convert chess notation to board indices correctly
-        file = start_tile[0]  # 'a'-'h'
-        rank = start_tile[1]  # '1'-'8'
+        start_tile = move[0:2] 
+        end_tile = move[2:4]
 
-        col = ord(file) - ord('a')  # 0-7
-        row = 8 - int(rank)         # 0-7 (rank 1 = row 7)
+        row, col = self.chess_notation_to_indices(start_tile) 
+        target_row, target_col = self.chess_notation_to_indices(end_tile) 
 
-        target_file = target_tile[0]  # 'a'-'h'
-        target_rank = target_tile[1]  # '1'-'8'
-
-        target_col = ord(target_file) - ord('a')  # 0-7
-        target_row = 8 - int(target_rank)         # 0-7 (rank 1 = row 7)
-
-        moveForward = self.make_sure_piece_is_moving_forward(row, col, target_row)
-
-        if self.board[row][col] not in ('P', 'p'):
-            print("Not a pawn... invalid move")
-            isPawnMoveAllowed = False
-            return (isPawnMoveAllowed, False, False, False)
-            # return False
-
-        # make sure the target tile doesn't already have a piece of the same color
-        if self.board[target_row][target_col] != '': 
-            if self.boardOfPieceInstances[target_row][target_col].piece_color == self.boardOfPieceInstances[row][col].piece_color:
-                isPawnMoveAllowed = False
+        moveForward = self.is_pawn_moving_forward(row, col, target_row)
 
         # check if the pawn is moving forward properly
         if col == target_col:
@@ -106,8 +102,7 @@ class ChessLogic:
                 if(self.boardOfPieceInstances[row][col].hasMoved == True):
                     print("Can't move forward two squares after the first move")
                     isPawnMoveAllowed = False
-                    
-                             
+           
                 
             # check if the pawn is moving one square forward
             if abs(row - target_row) == 1:
@@ -129,29 +124,6 @@ class ChessLogic:
                     isPawnMoveAllowed = False
                 else:
                     isPawnMoveAllowed = True
-                
-                     
-        # Handle moving logic after determining that the move is valid    
-        if (isPawnMoveAllowed == True):
-            # make the move
-
-            # update the main board
-            self.board[target_row][target_col] = self.board[row][col]
-            self.board[row][col] = ''
-
-            # update the board of piece instances
-            self.boardOfPieceInstances[target_row][target_col] = self.boardOfPieceInstances[row][col]
-            self.boardOfPieceInstances[row][col] = None
-
-            # update the piece instance
-            self.boardOfPieceInstances[target_row][target_col].currPos = (target_col, target_row)
-            self.boardOfPieceInstances[target_row][target_col].numMoves += 1
-            self.boardOfPieceInstances[target_row][target_col].hasMoved = True
-
-            # print the board
-            #for row in self.board:
-            #   print(row)
-            #print()
 
         return (isPawnMoveAllowed, False, False, False)
 
@@ -173,23 +145,19 @@ class ChessLogic:
         # Check that the rook is not jumping over any pieces. 
         # Doesn't check if it has captured a piece. 
         if start_row == end_row: # Moving along a row, col changes. Board[var][const]. Board[rank][file]. Board[row][col]. 
-
-            direction = self.dir_increment_decrement(start_col, end_col)
-            
-            for i in range(start_row + direction, end_row, direction):
-                if (self.board[start_row][i] != ''):
-                    return False
+            if self.pieces_between_cols(self, start_col, end_col, start_row):
+                return False
                 
         elif start_col == end_col: # Moving along a col, row changes. 
-
-            direction = self.dir_increment_decrement(start_row, end_row)
-
-            for i in range(start_row + direction, end_row, direction):
-                if (self.board[i][start_col] != ''):
-                    return False
+            if self.pieces_between_rows(self, start_row, end_row, start_col):
+                return False
                 
         else: # Rook is moving properly. 
             return True
+        
+
+    def knight_movement_valid(self, move: str) -> bool:
+        pass
 
 
     def bishop_movement_valid(self, move: str) -> bool:
@@ -218,10 +186,11 @@ class ChessLogic:
             
         return True
     
+
     def queen_movement_valid(self, move: str) -> bool:
         # The queen's can move in any direction, as long as it's in a straight line.
         # Horizontal, vertical, and diagonal. Basically a combination of rook and bishop movements. 
-        hor_or_vert = self.rook_movement(self, move) # <- CHECK THIS SYNTAX. 
+        hor_or_vert = self.rook_movement(self, move) 
         diag = self.bishop_movement(self, move)
 
         # Queen is moving properly if it moves either like a rook or a bishop.
@@ -229,15 +198,42 @@ class ChessLogic:
             return True
         else: 
             return False
-        
-
-    def move_knight(self, start_tile: str, target_tile: str) -> bool:
     
-        pass
+    
+    def king_movement_valid(self, move: str) -> tuple[bool, bool, bool]:
 
+        valid = True
+        kingside_castle = False
+        queenside_castle = False
+        
+        # Get indices. 
+        start_tile = move[0:2] 
+        end_tile = move[2:4]
 
-    def move_king(self, start_tile: str, target_tile: str) -> bool:
-        pass
+        start_row, start_col = self.chess_notation_to_indices(start_tile) 
+        end_row, end_col = self.chess_notation_to_indices(end_tile) 
+
+        # Check if King is moving only one square in any direction. 
+        change_in_rows = abs(start_row - end_row)
+        change_in_cols = abs(start_col - end_col)
+
+        if (change_in_rows <= 0 and change_in_cols <= 0):
+            # The King has only moved one square, so no possibility of a castle. 
+            # This is a valid way for the king to move. 
+            valid = True
+            kingside_castle = False
+            queenside_castle = False
+        
+        elif (change_in_rows == 0 and change_in_cols == 2):
+            # There is potentially a castle.
+            valid, kingside_castle, queenside_castle = self.is_valid_castle(self, start_row, start_col, end_row, end_col)
+
+        else:
+            valid = False
+            kingside_castle = False
+            queenside_castle = False
+        
+        return valid, kingside_castle, queenside_castle
 
 
     # ----------------------------------------------------------------- #
@@ -252,47 +248,99 @@ class ChessLogic:
             return True
 
         return False
+    
+
+    def is_en_passant(self, move: str) -> bool:
+        # Get indices of current move. 
+        start_row, start_col = self.chess_notation_to_indices(move[0:2]) 
+        end_row, end_col = self.chess_notation_to_indices(move[2:4]) 
+
+        # Get indices of previous move. 
+        prev_start_row, prev_start_col = self.chess_notation_to_indices(self.prev_move_played[0:2]) 
+        prev_end_row, prev_end_col = self.chess_notation_to_indices(self.prev_move_played[2:4]) 
+
+        # Check that the previous move was a pawn. 
+        piece = self.board[prev_end_row][prev_end_col]
+        if piece.lower() != 'p':
+            return False
+
+        # Find direction our pawn is moving in terms of rows. Is it moving up or down rows? 
+        direction = self.dir_increment_decrement(self, start_row, end_row)
+
+        # Check that in the previous move, opponent's pawn moved forward into the right position. 
+        # The previous start and end columns should be the same as the current end column. 
+        if prev_start_col == prev_end_col == end_col:
+            if start_row == prev_end_row:
+                if prev_start_row == end_row + direction:
+                    return True
+                
+        else:
+            return False
+
+
+    def is_valid_castle(self, start_row: int, start_col: int, end_row: int, end_col: int) -> tuple[bool, bool, bool]:
+        valid = True
+        kingside_castle = False
+        queenside_castle = False
+
+        # Check that the king has not previously moved.
+        king = self.boardOfPieceInstances[start_row][start_col]
+        if king.hasMoved == True:
+            valid = False
+            return valid, kingside_castle, queenside_castle
+
+        # Check that the rook involved has not previously moved.
+        if (end_col - start_col > 0): # Possible kingside castle. 
+            rook = self.boardOfPieceInstances[end_row][7]
+        else: # Possible queenside castle. 
+            rook = self.boardOfPieceInstances[end_row][0]
+        
+        if rook.hasMoved == True:
+            valid = False
+            return valid, kingside_castle, queenside_castle
+
+        # Check that there are no pieces between the king and the rook.
+        # Check kingside: 
+        if (end_col - start_col > 0):
+            if self.pieces_between_cols(self, start_col, 7, start_row):
+                valid = False
+                return valid, kingside_castle, queenside_castle
+            kingside_castle = True
+
+        else: # Check queenside. 
+            if self.pieces_between_cols(self, start_col, 0, start_row):
+                valid = False
+                return valid, kingside_castle, queenside_castle
+            queenside_castle = True
+
+        # TODO: Check that the king is not passing through or land on a square that is under attack.
+        #
+        #
+
+        return valid, kingside_castle, queenside_castle
+
 
     def player_in_check(self) -> bool:
         # TODO:
+        # From king's position, try combinatations of ways pieces can move. 
+            # Start at King, increment vertical values until we hit a piece. 
+                # Check if that piece is an opponent's piece. 
+                # Check if the piece is a rook or queen. 
+                    # If these are both true, that means that there is an open space for a check. 
+            # Repeat for other directions.
+            # For knight, check the different positions that a knight can jump to if
+            # it were in the king's position. If one of those positions has 
+            # an opponent knight, that means that the knight is checking 
+            # the king. 
 
         return False
+
 
     def player_in_checkmate(self) -> bool:
         # TODO:
 
         return False
 
-    def can_castle(self) -> bool:
-        # TODO: Check that the king doesn't move into check
-
-        # TODO: Check that the king hasn't moved in the game so far
-
-        # TODO: Check that the castling rook has not moved during the game
-        # We can do this with a bool saying "left_castle_has_moved", etc.
-
-        # Check that there is space for a long castle
-        if self.board[-1][:5] == ["R", "", "", "", "K"]:
-            return True
-
-        if self.board[-1][4:] == ["K", "", "", "R"]:
-            return True
-
-        return False
-    
-    # MOVE THIS SOMEWHERE ELSE? 
-    def make_sure_piece_is_moving_forward(self, row, col, target_row) -> bool:
-        if self.boardOfPieceInstances[row][col].piece_color == "black" and int(row) < int(target_row):
-            isPawnMovingForward = False
-        if self.boardOfPieceInstances[row][col].piece_color == "white" and int(row) > int(target_row):
-            isPawnMovingForward = False
-        else:
-            isPawnMovingForward = True
-
-        return isPawnMovingForward
-    
-    def move_castling(self, start_tile: str, target_tile: str) -> bool:
-        pass
 
     def moved_to_check():
         pass
@@ -353,10 +401,68 @@ class ChessLogic:
             return True
         else:
             return False
+        
+        
+    def pieces_between_cols(self, start_col: int, end_col: int, row: int) -> bool:
+        
+        direction = self.dir_increment_decrement(start_col, end_col)
+            
+        for i in range(start_col + direction, end_col, direction):
+             if (self.board[row][i] != ''):
+                return True
+             
+        return False
+
+
+    def pieces_between_rows(self, start_row: int, end_row: int, col: int) -> bool:
+
+        direction = self.dir_increment_decrement(start_row, end_row)
+
+        for i in range(start_row + direction, end_row, direction):
+            if (self.board[i][col] != ''):
+                return True
+        
+        return False
 
 
     # ----------------------------------------------------------------- #
     # Principle tasks called by the main function --------------------- #
+
+
+    def update_piece_and_boardOfPieceInstances(self, move: str, kingside_castle: bool, queenside_castle: bool, en_passant: bool):
+        start_tile = move[0:2] 
+        end_tile = move[2:4]
+
+        start_row, start_col = self.chess_notation_to_indices(start_tile) 
+        end_row, end_col = self.chess_notation_to_indices(end_tile) 
+
+        # Update the board of piece instances. 
+        self.boardOfPieceInstances[end_row][end_col] = self.boardOfPieceInstances[start_row][start_col]
+        self.boardOfPieceInstances[start_row][start_col] = None
+
+        if kingside_castle == True:
+            # King as already moved. 
+            # Move the rook. 
+            self.boardOfPieceInstances[end_row][end_col - 1] = self.boardOfPieceInstances[start_row][start_col + 3]
+            self.boardOfPieceInstances[start_row][start_col + 3] = None
+
+        if queenside_castle == True:
+            # King as already moved. 
+            # Move the rook. 
+            self.boardOfPieceInstances[end_row][end_col + 1] = self.boardOfPieceInstances[start_row][start_col - 4]
+            self.boardOfPieceInstances[start_row][start_col - 4] = None
+
+        if en_passant == True:
+            # The pawn has been moved. 
+            # Must remove the captured pawn from the board. 
+            self.boardOfPieceInstances[start_row][end_col] = ''
+
+        # Update the piece instance. 
+        self.boardOfPieceInstances[end_row][end_col].currPos = (end_col, end_row) # ASK JASH ABOUT THE CURRPOS. 
+        self.boardOfPieceInstances[end_row][end_col].hasMoved = True
+
+        return
+
 
     def update_board(self, move: str, kingside_castle: bool, queenside_castle: bool, en_passant: bool): 
         # Update the board. 
@@ -451,6 +557,7 @@ class ChessLogic:
         
         if valid:
             # Check if piece was captured at end tile, and that it was the opponent's piece. 
+            # This doesn't cover the en passant edge case.                                      <- MAKE SURE TO COVER THIS IN EN PASSANT. 
             capture = self.opponent_piece_at_tile(self, move[2:4])
 
             # Checking piece specific valid/invalid. 
@@ -476,19 +583,19 @@ class ChessLogic:
                 valid = self.queen_movement_valid(self, move)
 
             elif piece == 'k': # king
-                valid = self.king_movement_valid()
+                valid, kingside_castle, queenside_castle = self.king_movement_valid()
 
-                if valid:
-                    kingside_castle = self.is_kingside_castle()
-                    queenside_castle = self.is_queenside_castle()
+                # if valid:
+                #     kingside_castle = self.is_kingside_castle()
+                #     queenside_castle = self.is_queenside_castle()
                     
-            # Check that move does not leave own king in check. 
+            # TODO Check that move does not leave own king in check. 
             #####
 
-            # Check whether move places opponent's king in check. 
+            # TODO Check whether move places opponent's king in check. 
             #####
 
-            # Check whether move places opponent's king in checkmate. 
+            # TODO Check whether move places opponent's king in checkmate. 
             #####
 
         return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, game_over
@@ -521,12 +628,19 @@ class ChessLogic:
 
         # parse_move() # Already done in the other functions. 
 
+        # Check if move is valid. 
         valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, game_over = self.is_valid_move(self, move) 
 
+        # Write out the extended chess notation. 
         notation = self.chess_notation(self, move, valid, capture, kingside_castle, queenside_castle, pawn_prom)
 
+        # If the move is valid, update the board and results. 
         if valid: 
             self.update_board(self, move, kingside_castle, queenside_castle, en_passant) # Update the board. 
+            self.update_piece_and_boardOfPieceInstances(self, move, kingside_castle, queenside_castle, en_passant)
+
+            # Update the previous move to move that was just played.
+            self.prev_move_played = move
 
             # ADD CODE HERE TO UPDATE THE RESULT FIELD. 
             if game_over:
