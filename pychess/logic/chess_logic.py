@@ -158,6 +158,8 @@ class ChessLogic:
         else: # Rook is moving properly.
             return True
 
+        return False
+
 
     def knight_movement_valid(self, move: str) -> bool:
         isKnightMoveAllowed = True

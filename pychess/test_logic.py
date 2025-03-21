@@ -44,6 +44,18 @@ def test_is_pawn_moving_forward():
         assert p.is_pawn_moving_forward(x, y, x + 1)
 
 
+def test_opponent_piece_at_tile():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    assert p.opponent_piece_at_tile("d7") == True
+    assert p.opponent_piece_at_tile("d1") == False
+    # Change the turn manually
+    p.whoseTurn = False
+    assert p.opponent_piece_at_tile("d7") == False
+    assert p.opponent_piece_at_tile("d1") == True
+
+
 def test_moving_piece():
     pass
 
