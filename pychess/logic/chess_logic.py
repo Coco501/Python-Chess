@@ -63,6 +63,8 @@ class ChessLogic:
     # Functions related to logic for specific pieces ------------------ #
 
     def is_pawn_moving_forward(self, row, col, target_row) -> bool:
+        isPawnMovingForward = False
+
         if self.boardOfPieceInstances[row][col].piece_color == "black" and int(row) < int(target_row):
             isPawnMovingForward = False
 

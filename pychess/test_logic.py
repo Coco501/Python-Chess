@@ -21,6 +21,29 @@ def test_dir_increment_decrement():
     assert p.dir_increment_decrement(2, 5) == 1
 
 
+def test_is_pawn_moving_forward():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    x, y = p.chess_notation_to_indices("b2")
+    # Move the pawn forward 1
+    assert p.is_pawn_moving_forward(x, y, x + 1)
+
+    x, y = p.chess_notation_to_indices("h2")
+    # Move the pawn forward 1
+    assert p.is_pawn_moving_forward(x, y, x + 1)
+
+    with pytest.raises(AttributeError):
+        # Pawn does not exist
+        x, y = p.chess_notation_to_indices("b5")
+        assert p.is_pawn_moving_forward(x, y, x + 1)
+
+    with pytest.raises(AttributeError):
+        # Pawn does not exist
+        x, y = p.chess_notation_to_indices("b4")
+        assert p.is_pawn_moving_forward(x, y, x + 1)
+
+
 def test_moving_piece():
     pass
 
