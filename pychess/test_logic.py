@@ -1,15 +1,24 @@
 import pytest
-from logic import chess_logic
 
 
 def test_chess_notation_to_indices():
-    p = chess_logic.ChessLogic()
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
 
     assert p.chess_notation_to_indices("a5") == (3, 0)
     assert p.chess_notation_to_indices("a8") == (0, 0)
     assert p.chess_notation_to_indices("h1") == (7, 7)
     assert p.chess_notation_to_indices("b2") == (6, 1)
     assert p.chess_notation_to_indices("b1") == (7, 1)
+
+
+def test_dir_increment_decrement():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    assert p.dir_increment_decrement(1, 0) == -1
+    assert p.dir_increment_decrement(0, 1) == 1
+    assert p.dir_increment_decrement(2, 5) == 1
 
 
 def test_moving_piece():

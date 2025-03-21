@@ -431,7 +431,7 @@ class ChessLogic:
         return False # default
 
 
-    def dir_increment_decrement(start: int, end: int) -> int:
+    def dir_increment_decrement(self, start: int, end: int) -> int:
         # Function to decide if we increment or decrement from start to end.
         if start - end > 0:
             return -1
