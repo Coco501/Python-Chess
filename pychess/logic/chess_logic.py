@@ -157,6 +157,7 @@ class ChessLogic:
         
 
     def knight_movement_valid(self, move: str) -> bool:
+        # TODO: Get code from Jash's branch. 
         pass
 
 
@@ -279,14 +280,13 @@ class ChessLogic:
 
 
     def is_valid_castle(self, start_row: int, start_col: int, end_row: int, end_col: int) -> tuple[bool, bool, bool]:
-        valid = True
+        valid = False
         kingside_castle = False
         queenside_castle = False
 
         # Check that the king has not previously moved.
         king = self.boardOfPieceInstances[start_row][start_col]
         if king.hasMoved == True:
-            valid = False
             return valid, kingside_castle, queenside_castle
 
         # Check that the rook involved has not previously moved.
@@ -296,20 +296,17 @@ class ChessLogic:
             rook = self.boardOfPieceInstances[end_row][0]
         
         if rook.hasMoved == True:
-            valid = False
             return valid, kingside_castle, queenside_castle
 
         # Check that there are no pieces between the king and the rook.
         # Check kingside: 
         if (end_col - start_col > 0):
             if self.pieces_between_cols(self, start_col, 7, start_row):
-                valid = False
                 return valid, kingside_castle, queenside_castle
             kingside_castle = True
 
         else: # Check queenside. 
             if self.pieces_between_cols(self, start_col, 0, start_row):
-                valid = False
                 return valid, kingside_castle, queenside_castle
             queenside_castle = True
 
@@ -323,23 +320,40 @@ class ChessLogic:
     def player_in_check(self) -> bool:
         # TODO:
         # From king's position, try combinatations of ways pieces can move. 
-            # Start at King, increment vertical values until we hit a piece. 
-                # Check if that piece is an opponent's piece. 
-                # Check if the piece is a rook or queen. 
-                    # If these are both true, that means that there is an open space for a check. 
-            # Repeat for other directions.
-            # For knight, check the different positions that a knight can jump to if
-            # it were in the king's position. If one of those positions has 
-            # an opponent knight, that means that the knight is checking 
-            # the king. 
+            # Start at king, and increment outwards. 
+                # Check along the vertical until we hit a piece. 
+                    # If we do, check if that piece is an opponent's piece. 
+                    # Check if that piece is a rook or queen, something that can move in that way. 
+                        # If true, then the king is in check. 
+                # Check along the horizontal until we hit a piece. 
+                    # If we do, check if that piece is an opponent's piece. 
+                        # Check if that piece is a rook or queen, something that can move in that way. 
+                            # If true, then the king is in check. 
+                # Check along diagonals.
+                    # Check for queen, bishop, rook. 
+                # Check the spaces that a knight can be. 
+                    # Change in 2 along one axis, change in 1 along the other axis. 
 
-        return False
+
+        # TODO: We'll need a way to keep track of where the king is. 
+            # Probably just add another class variable. 
+
+        # Also we need to check both kings, because current player can't leave their king in check,
+        # and we also have to check if they've put the opponent in check. 
+
+        pass
 
 
     def player_in_checkmate(self) -> bool:
         # TODO:
+        # Call check from all of the possible spaces a king can move to? 8 spaces.
 
         return False
+    
+
+    def stalemate(self) -> bool:
+        # If player is not in check, but there is no move the player can make without putting their king in check. 
+        pass
 
 
     def moved_to_check():
@@ -520,7 +534,7 @@ class ChessLogic:
         else: 
             if (piece.lower() != 'p'): 
                 # It is not a pawn. 
-                notation = notation + piece.piece_type.lower() # check that this is proper string. 
+                notation = notation + piece.lower() # check that this is proper string. 
             
             if capture == True: 
                 notation = notation + move[0:2].lower() + "x" + move[2:4].lower()
@@ -541,7 +555,7 @@ class ChessLogic:
         pawn_prom = False
         en_passant = False
         game_over = False
-        ###### Need a var or bool for winner or draw? 
+        draw = False
 
         start_row, start_col = self.chess_notation_to_indices(move[0:2]) 
         end_row, end_col = self.chess_notation_to_indices(move[2:4]) 
@@ -598,7 +612,7 @@ class ChessLogic:
             # TODO Check whether move places opponent's king in checkmate. 
             #####
 
-        return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, game_over
+        return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, game_over, draw
     
 
     # ----------------------------------------------------------------- #
@@ -625,11 +639,12 @@ class ChessLogic:
         pawn_prom = False
         en_passant = False
         game_over = False      # Game is over when one side wins or there is a draw. 
+        draw = False
 
         # parse_move() # Already done in the other functions. 
 
         # Check if move is valid. 
-        valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, game_over = self.is_valid_move(self, move) 
+        valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, game_over, draw = self.is_valid_move(self, move) 
 
         # Write out the extended chess notation. 
         notation = self.chess_notation(self, move, valid, capture, kingside_castle, queenside_castle, pawn_prom)
@@ -643,8 +658,14 @@ class ChessLogic:
             self.prev_move_played = move
 
             # ADD CODE HERE TO UPDATE THE RESULT FIELD. 
-            if game_over:
-                pass
+            if draw: 
+                self.result = "d"
+            elif game_over:
+                if self.whoseTurn == True: # White's turn
+                    self.result = "w"
+                else: # Black's turn
+                    self.result = "b"
+            # Else, the game hasn't ended yet, so the result is still empty. 
 
         return notation
 
