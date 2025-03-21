@@ -1,8 +1,8 @@
 class Piece: 
     # initializing the piece class
     def __init__(self, piece_type, piece_color, currPos):
-        self.piece_type = piece_type
-        self.piece_color = piece_color
+        self.piece_type = piece_type 
+        self.piece_color = piece_color # Not sure if this is needed either. 
         self.currPos = currPos # REMOVE THIS, NOT NECCESSARY. 
         self.hasMoved = hasMoved = False
 
@@ -77,53 +77,44 @@ class ChessLogic:
     # each move function returns true if the move is possible (only considering tiles)
     # do not consider external factors like other pieces
     # some functions return tuples of bools, for special cases like en passant, promotion, castling, etc.
-    def move_pawn(self, move: str) -> tuple[bool, bool, bool, bool]:
+    def move_pawn(self, move: str, capture: bool) -> tuple[bool, bool, bool, bool]:
         isPawnMoveAllowed = True
-
-        #'e2' on board is board[6][4]
-        #'e4' on board is board[4][4]
-
-        # check if the starting tile is a pawn
         
-        # Convert chess notation to board indices correctly
+        # Convert chess notation to board indices.
         start_tile = move[0:2] 
         end_tile = move[2:4]
-
         row, col = self.chess_notation_to_indices(start_tile) 
         target_row, target_col = self.chess_notation_to_indices(end_tile) 
 
+        # Checks if pawn is moving forward. 
         moveForward = self.is_pawn_moving_forward(row, col, target_row)
+        if (not moveForward):
+            return False
 
-        # check if the pawn is moving forward properly
+        # Check if the pawn is moving forward either one or two squares. 
         if col == target_col:
-            # check if the pawn is moving two squares forward
+            # If pawn is moving two steps forward, it must be its first move. 
             if abs(row - target_row) == 2:
                 # determine if this is allowed
                 if(self.boardOfPieceInstances[row][col].hasMoved == True):
-                    print("Can't move forward two squares after the first move")
                     isPawnMoveAllowed = False
            
-                
-            # check if the pawn is moving one square forward
+            # Check if the pawn is moving one square forward
             if abs(row - target_row) == 1:
-                if moveForward == False:
-                    isPawnMoveAllowed = False
-                else:
-                    isPawnMoveAllowed = True
+                isPawnMoveAllowed = True
                 
-        # could be a capture
-        if abs(col - target_col) == 1:
-            if moveForward == False:
-                isPawnMoveAllowed = False
+        # Check if the pawn is moving diagonally. Can do so for capture. 
+        if abs(row - target_row) == 1 and abs(col - target_col) == 1:
+                if capture == True:     
+                    # End tile had opponent's piece. 
+                    # Correctly moved diagonal to capture. 
+                    isPawnMoveAllowed = True
 
-            # check if the pawn is moving diagonally
-            if abs(row - target_row) == 1:
-                # determine if this is allowed
-                if self.board[target_row][target_col] == '':
-                    print("No piece to capture")
-                    isPawnMoveAllowed = False
-                else:
-                    isPawnMoveAllowed = True
+                else: # Capture == False. End tile doesn't have a piece on it. Allowed for en passant. 
+                    if self.is_en_passant(self, move):
+                        isPawnMoveAllowed = True
+                    else: # Not en passant and no piece was captured. 
+                        isPawnMoveAllowed = False
 
         return (isPawnMoveAllowed, False, False, False)
 
@@ -177,13 +168,8 @@ class ChessLogic:
             return False
         
         # Check that the bishop is not jumping over any pieces. 
-        direction_hor = self.dir_increment_decrement(start_col, end_col)
-        direction_ver = self.dir_increment_decrement(start_row, end_row)
-
-        for i,j in zip(range(start_col + direction_hor, end_col, direction_hor), 
-                       range(start_row + direction_ver, end_row, direction_ver)):
-            if (self.board[j][i] != ''):
-                return False
+        if self.pieces_along_diagonal(self, start_row, end_row, start_col, end_col):
+            return False
             
         return True
     
@@ -356,8 +342,8 @@ class ChessLogic:
         pass
 
 
-    def moved_to_check():
-        pass
+    # def moved_to_check():
+    #     pass
 
 
     # ----------------------------------------------------------------- #
@@ -418,7 +404,7 @@ class ChessLogic:
         
         
     def pieces_between_cols(self, start_col: int, end_col: int, row: int) -> bool:
-        
+        # Checks if there are any pieces in between two tiles. Col changes, row stays const. 
         direction = self.dir_increment_decrement(start_col, end_col)
             
         for i in range(start_col + direction, end_col, direction):
@@ -429,7 +415,7 @@ class ChessLogic:
 
 
     def pieces_between_rows(self, start_row: int, end_row: int, col: int) -> bool:
-
+        # Checks if there are any pieces in between two tiles. Row changes, col stays const.  
         direction = self.dir_increment_decrement(start_row, end_row)
 
         for i in range(start_row + direction, end_row, direction):
@@ -437,6 +423,16 @@ class ChessLogic:
                 return True
         
         return False
+    
+    def pieces_along_diagonal(self, start_row: int, end_row: int, start_col: int, end_col: int) -> bool:
+        # Checks if there are any pieces in between two tiles along a diagonal. 
+        direction_hor = self.dir_increment_decrement(start_col, end_col)
+        direction_ver = self.dir_increment_decrement(start_row, end_row)
+
+        for i,j in zip(range(start_col + direction_hor, end_col, direction_hor), 
+                       range(start_row + direction_ver, end_row, direction_ver)):
+            if (self.board[j][i] != ''):
+                return True
 
 
     # ----------------------------------------------------------------- #
@@ -547,7 +543,7 @@ class ChessLogic:
             return notation
         
 
-    def is_valid_move(self, move: str): # FINISH THIS HERE. 
+    def is_valid_move(self, move: str):
         valid = True 
         capture = False 
         kingside_castle = False 
@@ -577,7 +573,7 @@ class ChessLogic:
             # Checking piece specific valid/invalid. 
             if piece == 'p': # Pawn 
 
-                valid = self.is_valid_pawn()
+                valid, en_passant = self.move_pawn(self, move, capture)
 
                 if valid:
                     pawn_prom = self.is_pawn_prom()
@@ -657,7 +653,7 @@ class ChessLogic:
             # Update the previous move to move that was just played.
             self.prev_move_played = move
 
-            # ADD CODE HERE TO UPDATE THE RESULT FIELD. 
+            # Update the 'result' field. 
             if draw: 
                 self.result = "d"
             elif game_over:
