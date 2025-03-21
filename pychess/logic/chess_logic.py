@@ -158,8 +158,24 @@ class ChessLogic:
 
 
     def knight_movement_valid(self, move: str) -> bool:
-        # TODO: Get code from Jash's branch.
-        pass
+        isKnightMoveAllowed = True
+        start_tile = move[0:2]
+        target_tile = move[2:4]
+
+        row, col = self.chess_notation_to_indices(start_tile)
+        target_row, target_col = self.chess_notation_to_indices(target_tile)
+        
+        # check for proper movement
+        if abs(row - target_row) == 2 and abs(col - target_col) == 1:
+            isKnightMoveAllowed = True
+        
+        elif abs(row - target_row) == 1 and abs(col - target_col) == 2:
+            isKnightMoveAllowed = True
+        
+        else:
+            isKnightMoveAllowed = False
+            
+        return isKnightMoveAllowed
 
 
     def bishop_movement_valid(self, move: str) -> bool:
