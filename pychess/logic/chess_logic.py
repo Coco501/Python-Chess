@@ -4,7 +4,7 @@ class Piece:
         self.piece_type = piece_type
         self.piece_color = piece_color # Not sure if this is needed either.
         self.currPos = currPos # REMOVE THIS, NOT NECCESSARY.
-        self.hasMoved = hasMoved = False
+        self.hasMoved = False
 
 
 class ChessLogic:
@@ -63,6 +63,8 @@ class ChessLogic:
     # Functions related to logic for specific pieces ------------------ #
 
     def is_pawn_moving_forward(self, row, col, target_row) -> bool:
+        isPawnMovingForward = False
+
         if self.boardOfPieceInstances[row][col].piece_color == "black" and int(row) < int(target_row):
             isPawnMovingForward = False
 
@@ -156,6 +158,8 @@ class ChessLogic:
         else: # Rook is moving properly.
             return True
 
+        return False
+
 
     def knight_movement_valid(self, move: str) -> bool:
         isKnightMoveAllowed = True
@@ -164,17 +168,17 @@ class ChessLogic:
 
         row, col = self.chess_notation_to_indices(start_tile)
         target_row, target_col = self.chess_notation_to_indices(target_tile)
-        
+
         # check for proper movement
         if abs(row - target_row) == 2 and abs(col - target_col) == 1:
             isKnightMoveAllowed = True
-        
+
         elif abs(row - target_row) == 1 and abs(col - target_col) == 2:
             isKnightMoveAllowed = True
-        
+
         else:
             isKnightMoveAllowed = False
-            
+
         return isKnightMoveAllowed
 
 
@@ -289,8 +293,8 @@ class ChessLogic:
             if start_row == prev_end_row:
                 if prev_start_row == end_row + direction:
                     return True
-        else:
-            return False
+
+        return False
 
 
     def is_valid_castle(self, start_row: int, start_col: int, end_row: int, end_col: int) -> tuple[bool, bool, bool]:
@@ -349,6 +353,8 @@ class ChessLogic:
                 # TODO: Check the other color's pieces, not the lower case ones
                 if piece.piece_type in ["q", "r"]:
                     return True
+                else:
+                    rank_found_piece = True
 
         # Check the file
         file_found_piece = False
@@ -360,6 +366,8 @@ class ChessLogic:
                 # TODO: Check the other color's pieces, not the lower case ones
                 if piece.piece_type in ["q", "r"]:
                     return True
+                else:
+                    file_found_piece = True
 
             # Start at king, and increment outwards.
                 # Check along the vertical until we hit a piece.
@@ -394,7 +402,8 @@ class ChessLogic:
 
     def stalemate(self) -> bool:
         # If player is not in check, but there is no move the player can make without putting their king in check.
-        pass
+
+        return False
 
 
     # def moved_to_check():
@@ -443,7 +452,7 @@ class ChessLogic:
         return False # default
 
 
-    def dir_increment_decrement(start: int, end: int) -> int:
+    def dir_increment_decrement(self, start: int, end: int) -> int:
         # Function to decide if we increment or decrement from start to end.
         if start - end > 0:
             return -1
@@ -490,6 +499,7 @@ class ChessLogic:
             if (self.board[j][i] != ''):
                 return True
 
+        return False
 
     # ----------------------------------------------------------------- #
     # Principle tasks called by the main function --------------------- #
