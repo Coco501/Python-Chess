@@ -55,7 +55,11 @@ class ChessLogic:
 
         self.prev_move_played = "" # Holds the previous move.
 
-		# Boolean value keeping track of whose turn it is, true = white's turn, false = black's turn
+        # Positions of the kings. 
+        self.white_king_pos = "e1" 
+        self.black_king_pos = "e8"
+
+		# Boolean value keeping track of whose turn it is, True = white's turn, False = black's turn
         self.whoseTurn: bool = True
 
 
@@ -489,6 +493,21 @@ class ChessLogic:
                        range(start_row + direction_ver, end_row, direction_ver)):
             if (self.board[j][i] != ''):
                 return True
+            
+    
+    def update_king_position(self, square: str):
+        row, col = self.chess_notation_to_indices(square)
+
+        # Check if king moved. 
+        if self.board[row][col].lower() == 'k':
+
+            if self.whoseTurn == True: # White's turn
+                self.white_king_pos = square
+
+            else: # Black's turn
+                self.black_king_pos = square
+
+        return 
 
 
     # ----------------------------------------------------------------- #
@@ -530,7 +549,7 @@ class ChessLogic:
         return
 
 
-    def update_board(self, move: str, kingside_castle: bool, queenside_castle: bool, en_passant: bool):
+    def update_board(self, move: str, kingside_castle: bool, queenside_castle: bool, en_passant: bool, pawn_prom: bool):
         # Update the board.
 
         start_tile = move[0:2]
@@ -625,42 +644,73 @@ class ChessLogic:
 
         if valid:
             # Check if piece was captured at end tile, and that it was the opponent's piece.
-            # This doesn't cover the en passant edge case.                                      <- MAKE SURE TO COVER THIS IN EN PASSANT.
-            capture = self.opponent_piece_at_tile(self, move[2:4])
+            # This doesn't cover the en passant edge case. 
+            capture = self.opponent_piece_at_tile(move[2:4])
 
             # Checking piece specific valid/invalid.
             if piece == 'p': # Pawn
-                valid, capture, pawn_prom, en_passant = self.move_pawn(self, move, capture)
+                valid, capture, pawn_prom, en_passant = self.move_pawn(capture)
 
             elif piece == 'r': # rook
-                valid = self.rook_movement_valid(self, move)
+                valid = self.rook_movement_valid(move)
 
             elif piece == 'n': # knight
                 valid = self.knight_movement_valid() # check
 
             elif piece == 'b': # bishop
-                valid = self.bishop_movement_valid(self, move)
+                valid = self.bishop_movement_valid(move)
 
             elif piece == 'q': # queen
-                valid = self.queen_movement_valid(self, move)
+                valid = self.queen_movement_valid(move)
 
             elif piece == 'k': # king
                 valid, kingside_castle, queenside_castle = self.king_movement_valid()
+        
+        # Check for checks, checkmates, stalemates. 
+        check, checkmate, stalemate = self.is_check_checkmate_stalemate(valid)
 
-                # if valid:
-                #     kingside_castle = self.is_kingside_castle()
-                #     queenside_castle = self.is_queenside_castle()
-
-            # TODO Check that move does not leave own king in check.
-            #####
-
-            # TODO Check whether move places opponent's king in check.
-            #####
-
-            # TODO Check whether move places opponent's king in checkmate.
-            #####
+        
 
         return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, game_over, draw
+    
+
+    def is_check_checkmate_stalemate(self, valid) -> tuple[bool, bool, bool]:
+        check_player = False
+        check_opponent = False
+        future_check = False # If any of the king's escape routes will end in check. 
+        checkmate = False 
+        stalemate = False
+
+        if valid: 
+            # Check that move does not leave own king in check.
+            # And check whether move places opponent's king in check. <- TODO
+            if self.whoseTurn == True: # White's turn. 
+                if self.player_in_check(self.white_king_pos):
+                    check_player = True
+
+            else: # Black's turn. 
+                if self.player_in_check(self.black_king_pos):
+                    check_player = True
+
+            # Check for possible Checkmate. Check if king will be in check if it tries to escape 
+            # to surrounding pieces. 
+            if self.whoseTurn == True: # White's turn. 
+                if self.player_in_future_check(self.white_king_pos):
+                    future_check = True
+
+            else: # Black's turn. 
+                if self.player_in_future_check(self.black_king_pos):
+                    future_check = True
+
+            # Checkmate conditions. 
+            if check and future_check: 
+                checkmate = True
+
+            # Stalemate conditions. 
+            if (not check) and future_check:
+                stalemate = True
+        
+    # TODO: If checkmate is announced during current turn, 
 
 
     # ----------------------------------------------------------------- #
@@ -699,11 +749,17 @@ class ChessLogic:
 
         # If the move is valid, update the board and results.
         if valid:
-            self.update_board(self, move, kingside_castle, queenside_castle, en_passant) # Update the board.
-            self.update_piece_and_boardOfPieceInstances(self, move, kingside_castle, queenside_castle, en_passant)
+            self.update_board(move, kingside_castle, queenside_castle, en_passant, pawn_prom) # Update the board.
+            self.update_piece_and_boardOfPieceInstances(move, kingside_castle, queenside_castle, en_passant) # TODO ADD PAWN PROMOTION. 
 
             # Update the previous move to move that was just played.
             self.prev_move_played = move
+
+            # Update the king position if king was just moved.
+            self.update_king_position(move[2:4])
+
+            # Update which player's turn it is. 
+            self.whoseTurn = not self.whoseTurn
 
             # Update the 'result' field.
             if draw:
@@ -716,8 +772,7 @@ class ChessLogic:
             # Else, the game hasn't ended yet, so the result is still empty.
 
         return notation
-
-
+    
 
 
         #Implement this
