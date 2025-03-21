@@ -69,6 +69,24 @@ def test_is_same_tile():
     assert p.is_same_tile("e5e5")
 
 
+def test_queen_movement_valid():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    # Not the queen
+    assert not p.queen_movement_valid("a6a4")
+
+    # Move the pawn
+    p.update_board("d2d3", False, False, False)
+
+    p.update_board("d7d6", False, False, False)
+
+    print(p.board)
+
+    assert p.queen_movement_valid("d1d2")  # TODO: THIS SHOULD WORK
+    assert p.queen_movement_valid("d7d6")  # TODO: THIS SHOULD WORK
+
+
 def test_moving_piece():
     pass
 

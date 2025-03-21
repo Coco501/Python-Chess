@@ -6,6 +6,12 @@ class Piece:
         self.currPos = currPos # REMOVE THIS, NOT NECCESSARY.
         self.hasMoved = False
 
+    def __str__(self):
+        return f"{self.piece_type}"
+
+    def __repr__(self):
+        return self.__str__()
+
 
 class ChessLogic:
     def __init__(self):
@@ -207,14 +213,11 @@ class ChessLogic:
     def queen_movement_valid(self, move: str) -> bool:
         # The queen's can move in any direction, as long as it's in a straight line.
         # Horizontal, vertical, and diagonal. Basically a combination of rook and bishop movements.
-        hor_or_vert = self.rook_movement(move)
-        diag = self.bishop_movement(move)
+        hor_or_vert = self.rook_movement_valid(move)
+        diag = self.bishop_movement_valid(move)
 
         # Queen is moving properly if it moves either like a rook or a bishop.
-        if (hor_or_vert or diag):
-            return True
-        else:
-            return False
+        return hor_or_vert or diag
 
 
     def king_movement_valid(self, move: str) -> tuple[bool, bool, bool]:
