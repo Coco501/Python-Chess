@@ -56,6 +56,19 @@ def test_opponent_piece_at_tile():
     assert p.opponent_piece_at_tile("d1") == True
 
 
+def test_is_same_tile():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    assert p.is_same_tile("b4b4")
+    assert not p.is_same_tile("b4b5")
+
+    assert not p.is_same_tile("a1b1")
+    assert not p.is_same_tile("b4a1")
+
+    assert p.is_same_tile("e5e5")
+
+
 def test_moving_piece():
     pass
 

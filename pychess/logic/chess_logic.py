@@ -461,10 +461,7 @@ class ChessLogic:
 
 
     def is_same_tile(self, move: str) -> bool:
-        if (move[0:2] == move[2:4]):
-            return True
-        else:
-            return False
+        return move[0:2] == move[2:4]
 
 
     def pieces_between_cols(self, start_col: int, end_col: int, row: int) -> bool:
