@@ -1,9 +1,0 @@
-# first branch commit
-
-# write function to check for same team piece on target tile
-	# invalid move
-
-# write tests
-
-# write function to check if target tile is opposing team
-	# for capturing
