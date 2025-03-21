@@ -1,4 +1,16 @@
 import pytest
+from logic import chess_logic
+
+
+def test_chess_notation_to_indices():
+    p = chess_logic.ChessLogic()
+
+    assert p.chess_notation_to_indices("a5") == (3, 0)
+    assert p.chess_notation_to_indices("a8") == (0, 0)
+    assert p.chess_notation_to_indices("h1") == (7, 7)
+    assert p.chess_notation_to_indices("b2") == (6, 1)
+    assert p.chess_notation_to_indices("b1") == (7, 1)
+
 
 def test_moving_piece():
     pass
@@ -43,7 +55,7 @@ def test_pawn_promotion():
 def test_en_passant():
     pass
 
-def test_queenside_castling():  
+def test_queenside_castling():
     pass
 
 def test_kingside_castling():
