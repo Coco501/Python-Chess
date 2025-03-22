@@ -528,47 +528,45 @@ print("e2 to e4:", gameLogic.move_pawn("e2", "e4"))  # Valid: White pawn moves t
 print("d7 to d5:", gameLogic.move_pawn("d7", "d5"))
 print("e4 to d5:", gameLogic.move_pawn("e4", "d5"))  # Valid: White pawn captures black pawn
 
-    def chess_notation_to_indices(self, tile: str) -> tuple[int, int]:
-        file = tile[0]  # 'a'-'h'
-        rank = tile[1]  # '1'-'8'
-
-        col = ord(file) - ord('a')  # 0-7
-        row = 8 - int(rank)         # 0-7 (rank 1 = row 7)
-
-        return (row, col)
+def chess_notation_to_indices(self, tile: str) -> tuple[int, int]:
+    file = tile[0]  # 'a'-'h'
+    rank = tile[1]  # '1'-'8'
+    col = ord(file) - ord('a')  # 0-7
+    row = 8 - int(rank)         # 0-7 (rank 1 = row 7)
+    return (row, col)
 
 
-    def index_to_move(self, row: int, col: int):
-        c = chr(col + ord("a"))
-        r = abs(row - 8)
-        return f"{c}{r}"
+def index_to_move(self, row: int, col: int):
+    c = chr(col + ord("a"))
+    r = abs(row - 8)
+    return f"{c}{r}"
 
 
-    def own_piece_at_tile(self, tile: str) -> bool:
-        # potential error, using isupper() or islower() on empty string '' or ' ' could raise error?
-        row, col = self.chess_notation_to_indices(tile)
+def own_piece_at_tile(self, tile: str) -> bool:
+    # potential error, using isupper() or islower() on empty string '' or ' ' could raise error?
+    row, col = self.chess_notation_to_indices(tile)
 
-        if self.whoseTurn == True:  # white's turn
-            if self.board[row][col].isupper():
-                return True
+    if self.whoseTurn == True:  # white's turn
+        if self.board[row][col].isupper():
+            return True
 
-        elif self.whoseTurn == False:  # black's turn
-            if self.board[row][col].islower():
-                return True
+    elif self.whoseTurn == False:  # black's turn
+        if self.board[row][col].islower():
+            return True
 
-        return False  # default
+    return False  # default
 
 		
-    def opponent_piece_at_tile(self, tile: str) -> bool:
-        row, col = self.chess_notation_to_indices(tile)
+def opponent_piece_at_tile(self, tile: str) -> bool:
+    row, col = self.chess_notation_to_indices(tile)
 
-        if self.whoseTurn == True:  # white's turn
-            if self.board[row][col].islower():
-                return True
+    if self.whoseTurn == True:  # white's turn
+        if self.board[row][col].islower():
+            return True
 
-        elif self.whoseTurn == False:  # black's turn
-            if self.board[row][col].isupper():
-                return True
+    elif self.whoseTurn == False:  # black's turn
+        if self.board[row][col].isupper():
+            return True
 
-        return False # default
+    return False # default
 
