@@ -128,6 +128,27 @@ def test_pawn_promotion_black():
     assert p.pawn_promotion(x, y, nx, ny)
 
 
+def test_player_in_check():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    # Remove line of pawns to put into check
+    p.board[6] = [""] * 8
+    p.board[1] = [""] * 8
+
+    x, y = p.chess_notation_to_indices("e1")
+    assert not p.player_in_check(x, y)
+
+    # Place a queen
+    a, b = p.chess_notation_to_indices("e5")
+    p.board[a][b] = "q"
+
+    print(p.board)
+
+    x, y = p.chess_notation_to_indices("e1")
+    assert p.player_in_check(x, y)  # TODO: THIS SHOULD WORK
+
+
 def test_moving_piece():
     pass
 
