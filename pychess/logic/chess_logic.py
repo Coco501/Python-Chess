@@ -71,7 +71,7 @@ class ChessLogic:
     '''
 
     ''' PAWN '''
-    def pawn_movement_valid(self, move: str, piece_on_end_tile: bool) -> tuple[bool, bool, bool]:
+    def pawn_movement_valid(self, move: str, piece_on_end_tile: bool) -> tuple[bool, bool, bool, bool]:
         isPawnMoveAllowed = True
         pawn_prom = False
         en_passant = False
@@ -690,7 +690,7 @@ class ChessLogic:
                 valid, kingside_castle, queenside_castle = self.king_movement_valid()
 
             # Check for checks, checkmates, stalemates. 
-            white_win, black_win, draw = self.is_game_over(valid) 
+            white_win, black_win, draw = self.is_game_over() 
             # TODO DO WE NEED TO ONLY CHECK FOR CHECK IF THERE WAS A VALID MOVE PLAYED?
 
         return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, white_win, black_win, draw
