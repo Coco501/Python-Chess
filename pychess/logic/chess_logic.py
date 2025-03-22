@@ -516,13 +516,6 @@ class ChessLogic:
             else: # Black's turn
                 self.black_king_pos = square
 
-<<<<<<< HEAD
-        return 
-
-        return False
-=======
->>>>>>> 376d091 (Small fixes)
-
     # ----------------------------------------------------------------- #
     # Principle tasks called by the main function --------------------- #
 
@@ -673,21 +666,11 @@ class ChessLogic:
                 valid = self.queen_movement_valid(move)
 
             elif piece == 'k': # king
-<<<<<<< HEAD
                 valid, kingside_castle, queenside_castle = self.king_movement_valid()
         
         # Check for checks, checkmates, stalemates. 
         check, checkmate, stalemate = self.is_check_checkmate_stalemate(valid)
 
-        
-
-=======
-                valid, kingside_castle, queenside_castle = self.king_movement_valid(move)
-
-        # Check for checks, checkmates, stalemates.
-        check, checkmate, stalemate = self.is_check_checkmate_stalemate(valid)
-
->>>>>>> 376d091 (Small fixes)
         return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, game_over, draw
     
 
