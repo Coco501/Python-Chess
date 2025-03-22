@@ -239,8 +239,21 @@ def test_play_move_many():
 
     p.play_move("d2d3")
     p.display_board()
-    assert p.board[6][4] == " "
-    assert p.board[5][4] == "P"
+    assert p.board[6][4] == " "  # This space should now be empty
+    assert p.board[5][4] == "P"  # This space should have a pawn
+
+
+def test_is_game_over():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    assert p.is_game_over() == (False, False, False)  # No one should have won
+
+    p.play_move("e2e4")
+    assert p.board[4][4] == "P"
+    assert p.board[6][4] == ""
+
+    assert p.is_game_over() == (False, False, False)  # No one should have won
 
 
 def test_moving_piece():
