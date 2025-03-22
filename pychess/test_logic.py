@@ -256,6 +256,15 @@ def test_is_game_over():
     assert p.is_game_over() == (False, False, False)  # No one should have won
 
 
+def test_chess_notation():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    # Check castle with bool
+    assert p.chess_notation("e6e5", True, False, True, False, False) == "0-0"
+    assert p.chess_notation("e6e5", True, False, False, True, False) == "0-0-0"
+
+
 def test_moving_piece():
     pass
 
