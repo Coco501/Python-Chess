@@ -71,7 +71,7 @@ class ChessLogic:
     '''
 
     ''' PAWN '''
-    def pawn_movement_valid(self, move: str, piece_on_end_tile: bool) -> tuple[bool, bool, bool]:
+    def pawn_movement_valid(self, move: str, piece_on_end_tile: bool) -> tuple[bool, bool, bool, bool]:
         isPawnMoveAllowed = True
         pawn_prom = False
         en_passant = False
@@ -585,7 +585,12 @@ class ChessLogic:
             # Must remove the captured pawn from the board.
             self.board[start_row][end_col] = ''
 
-        # TODO: Add if statement for pawn promotion.
+        if pawn_prom == True:
+            # Replace the pawn with a queen. 
+            if self.whoseTurn == True: # White's turn. 
+                self.board[end_row][end_col] = 'Q'
+            else: # Black's turn
+                self.board[end_row][end_col] = 'q'
 
         return
 
@@ -673,9 +678,9 @@ class ChessLogic:
             elif piece == 'k': # king
                 valid, kingside_castle, queenside_castle = self.king_movement_valid()
 
-            # Check for checks, checkmates, stalemates. 
-            white_win, black_win, draw = self.is_game_over(valid) 
-            # TODO DO WE NEED TO ONLY CHECK FOR CHECK IF THERE WAS A VALID MOVE PLAYED?
+        # Check for checks, checkmates, stalemates. 
+        white_win, black_win, draw = self.is_game_over(valid) 
+        # TODO DO WE NEED TO ONLY CHECK FOR CHECK IF THERE WAS A VALID MOVE PLAYED?
 
         return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, white_win, black_win, draw
     
