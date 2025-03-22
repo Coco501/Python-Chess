@@ -89,7 +89,7 @@ class ChessLogic:
     # each move function returns true if the move is possible (only considering tiles)
     # do not consider external factors like other pieces
     # some functions return tuples of bools, for special cases like en passant, promotion, castling, etc.
-    def move_pawn(self, move: str, piece_on_end_tile: bool) -> tuple[bool, bool, bool]:
+    def move_pawn(self, move: str, piece_on_end_tile: bool) -> tuple[bool, bool, bool, bool]:
         isPawnMoveAllowed = True
         pawn_prom = False
         en_passant = False
