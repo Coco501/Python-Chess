@@ -65,6 +65,9 @@ class ChessLogic:
         self.whoseTurn: bool = True # Boolean value keeping track of whose turn it is, True = white's turn, False = black's turn
 
 
+    def display_board(self):
+        for row in self.board:
+            print([p if p != "" else " " for p in row])
 
     '''
     PIECE-SPECIFIC FUNCTIONS
@@ -367,28 +370,21 @@ class ChessLogic:
         # Check the rank
         rank_found_piece = False
         for test_file in range(0, 8):
-            piece = self.boardOfPieceInstances[kings_rank][test_file]
+            piece = self.board[kings_rank][test_file]
 
-            if not rank_found_piece:
-                # The pieces that can move up and down the whole board
-                # TODO: Check the other color's pieces, not the lower case ones
-                if piece.piece_type in ["q", "r"]:
-                    return True
-                else:
-                    rank_found_piece = True
+            # The pieces that can move up and down the whole board
+            # TODO: Check the other color's pieces, not the lower case ones
+            if piece in ["q", "r"]:
+                return True
 
         # Check the file
         file_found_piece = False
         for test_rank in range(0, 8):
-            piece = self.boardOfPieceInstances[test_rank][kings_file]
+            piece = self.board[test_rank][kings_file]
 
-            if not file_found_piece:
-
-                # TODO: Check the other color's pieces, not the lower case ones
-                if piece.piece_type in ["q", "r"]:
-                    return True
-                else:
-                    file_found_piece = True
+            # TODO: Check the other color's pieces, not the lower case ones
+            if piece in ["q", "r"]:
+                return True
 
             # Start at king, and increment outwards.
                 # Check along the vertical until we hit a piece.
@@ -621,8 +617,8 @@ class ChessLogic:
             self.board[start_row][end_col] = ''
 
         if pawn_prom == True:
-            # Replace the pawn with a queen. 
-            if self.whoseTurn == True: # White's turn. 
+            # Replace the pawn with a queen.
+            if self.whoseTurn == True: # White's turn.
                 self.board[end_row][end_col] = 'Q'
             else: # Black's turn
                 self.board[end_row][end_col] = 'q'
