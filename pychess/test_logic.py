@@ -25,11 +25,11 @@ def test_is_pawn_moving_forward():
     from logic.chess_logic import ChessLogic
     p = ChessLogic()
 
-    x, y = p.chess_notation_to_indices("b2")
+    x, y = p.chess_notation_to_indices("b2") # White pawn
     # Move the pawn forward 1
-    assert p.is_pawn_moving_forward(x, y, x + 1)
+    assert p.is_pawn_moving_forward(x, y, x - 1)
 
-    x, y = p.chess_notation_to_indices("h2")
+    x, y = p.chess_notation_to_indices("h2") # White pawn
     # Move the pawn forward 1
     assert p.is_pawn_moving_forward(x, y, x + 1)
 
