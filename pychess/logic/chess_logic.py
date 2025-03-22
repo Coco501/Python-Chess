@@ -671,6 +671,9 @@ class ChessLogic:
         game_over = False
         draw = False
 
+        white_win = False
+        black_win = False
+
         start_row, start_col = self.chess_notation_to_indices(move[0:2])
         end_row, end_col = self.chess_notation_to_indices(move[2:4])
 
@@ -707,9 +710,9 @@ class ChessLogic:
             elif piece == 'k': # king
                 valid, kingside_castle, queenside_castle = self.king_movement_valid(move)
 
-        # Check for checks, checkmates, stalemates.
-        white_win, black_win, draw = self.is_game_over()
-        # TODO DO WE NEED TO ONLY CHECK FOR CHECK IF THERE WAS A VALID MOVE PLAYED?
+            # Check for checks, checkmates, stalemates.
+            white_win, black_win, draw = self.is_game_over()
+            # TODO DO WE NEED TO ONLY CHECK FOR CHECK IF THERE WAS A VALID MOVE PLAYED?
 
         return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, white_win, black_win, draw
 
@@ -746,9 +749,9 @@ class ChessLogic:
                 # restore board when we were in check too
                 self.board[row][col] = king
                 self.board[new_row][new_col] = lastpiece
-        
+
         return True
-                
+
     def is_game_over(self) -> tuple[bool, bool, bool]:
         check_player = False
         check_opponent = False
