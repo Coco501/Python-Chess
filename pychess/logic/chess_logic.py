@@ -340,14 +340,29 @@ class ChessLogic:
 
         return valid, kingside_castle, queenside_castle
 
-    ''' CHECK '''
-    def player_in_check(self, rank: int, file: int) -> bool:
+
+    def player_in_check(self, move: str) -> bool:
+      
+        # TODO:
+        # From king's position, try combinatations of ways pieces can move. 
+            # Start at king, and increment outwards. 
+                # Check along the vertical until we hit a piece. 
+                    # If we do, check if that piece is an opponent's piece. 
+                    # Check if that piece is a rook or queen, something that can move in that way. 
+                        # If true, then the king is in check. 
+                # Check along the horizontal until we hit a piece. 
+                    # If we do, check if that piece is an opponent's piece. 
+                        # Check if that piece is a rook or queen, something that can move in that way. 
+                            # If true, then the king is in check. 
+
+      
         # TODO:
         # From king's position, try combinatations of ways pieces can move.
 
-        # TODO: Get the position of the king
-        kings_rank = rank
-        kings_file = file
+        kings_rank, kings_file = self.chess_notation_to_indices(move)
+
+        # TODO:
+        # From king's position, try combinatations of ways pieces can move.
 
         # Check the rank
         rank_found_piece = False
@@ -384,6 +399,7 @@ class ChessLogic:
                     # If we do, check if that piece is an opponent's piece.
                         # Check if that piece is a rook or queen, something that can move in that way.
                             # If true, then the king is in check.
+
                 # Check along diagonals.
                     # Check for queen, bishop, rook.
                 # Check the spaces that a knight can be.
