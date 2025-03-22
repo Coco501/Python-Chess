@@ -388,12 +388,13 @@ def test_rook_movement():
     ]
 
     p.play_move("b1b6")
+    assert p.board[2][1] == "R"  # Moved up
 
-    p.display_board()
-    assert p.board[2][1] == "R"
+    p.play_move("b6b5")
+    assert p.board[3][1] == "R"  # Moved down
 
-    p.play_move("b6a6")
-    assert p.board[2][0] == "R"
+    p.play_move("b6a5")
+    assert p.board[2][0] == "R"  # Moved left
 
 
 def test_moving_piece():
