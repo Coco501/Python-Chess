@@ -250,7 +250,7 @@ def test_play_move_many():
 
     p.play_move("d2d3")
     p.display_board()
-    assert p.board[6][4] == " "  # This space should now be empty
+    assert p.board[6][4] == ""  # This space should now be empty
     assert p.board[5][4] == "P"  # This space should have a pawn
 
 
@@ -266,7 +266,7 @@ def test_play_move_white_and_black_pawn():
     # Move black pawn
     p.play_move("e7e6")
     p.display_board()
-    assert p.board[1][4] == " "  # This space should now be empty
+    assert p.board[1][4] == ""  # This space should now be empty
     assert p.board[2][4] == "p"  # This space should have a pawn
 
     # Move white pawn
@@ -277,7 +277,7 @@ def test_play_move_white_and_black_pawn():
     # Move black pawn
     p.play_move("d7d6")
     p.display_board()
-    assert p.board[1][3] == " "  # This space should now be empty
+    assert p.board[1][3] == ""  # This space should now be empty
     assert p.board[2][3] == "p"  # This space should have a pawn
 
 
