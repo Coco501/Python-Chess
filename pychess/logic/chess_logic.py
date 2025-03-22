@@ -733,11 +733,12 @@ class ChessLogic:
                 continue # skip due to out of bounds
 
             new_row, new_col = row + rd, col + cd
+            chessnotation = self.index_to_move(new_row, new_col)
             lastpiece = self.board[new_row][new_col]
             if not ((lastpiece.islower() and king.islower) or (lastpiece.isupper() and king.isupper())): # not moving onto own piece
                 self.board[new_row][new_col] = king # temporarily move king
                 self.board[row][col] = '' # king moved away
-                if not self.player_in_check(new_row, new_col): # TODO: ARGUMENTS EXPECTING CHESS NOTATION, change signature?
+                if not self.player_in_check(chessnotation): # TODO: ARGUMENTS EXPECTING CHESS NOTATION, change signature?
                     # restore board
                     self.board[row][col] = king
                     self.board[new_row][new_col] = lastpiece
