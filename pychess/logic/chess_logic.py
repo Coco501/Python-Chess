@@ -743,6 +743,11 @@ class ChessLogic:
                     self.board[row][col] = king
                     self.board[new_row][new_col] = lastpiece
                     return False # king not in check when moved
+                # restore board when we were in check too
+                self.board[row][col] = king
+                self.board[new_row][new_col] = lastpiece
+        
+        return True
                 
 
     def is_game_over(self) -> tuple[bool, bool, bool]:
