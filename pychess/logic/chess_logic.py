@@ -1,12 +1,17 @@
-class Piece: 
+class Piece:
     # initializing the piece class
     def __init__(self, piece_type, piece_color, currPos):
         self.piece_type = piece_type
         self.piece_color = piece_color
         self.currPos = currPos
-        self.numMoves = numMoves = 0
-        self.hasMoved = hasMoved = False
-        self.number_of_moves = 0 # DUPLICATE, replace all instances with numMoves
+        self.hasMoved = False
+
+    def __str__(self):
+        return f"{self.piece_type}"
+
+    def __repr__(self):
+        return self.__str__()
+
 
 class ChessLogic:
     def __init__(self):
@@ -29,7 +34,8 @@ class ChessLogic:
 
             '' - Game In Progress
         """
-        # board[row][col]
+
+        # self.board[row][col]
         self.board = [
 			['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
 			['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
@@ -52,207 +58,173 @@ class ChessLogic:
             [Piece('R', 'white', (0,7)), Piece('N', 'white', (1,7)), Piece('B', 'white', (2,7)), Piece('Q', 'white', (3,7)), Piece('K', 'white', (4,7)), Piece('B', 'white', (5,7)), Piece('N', 'white', (6,7)), Piece('R', 'white', (7,7))]
         ]
 
-        self.result = "" 
-		
-		# boolean value keeping track of whose turn it is, true = white's turn, false = black's turn
-        self.whoseTurn: bool = True
-        
-    def can_promote(self) -> bool:
-        """Check if a piece can promote after a move has been made"""
-        if "P" in self.board[0]:
-            return True
-
-        if "p" in self.board[-1]:
-            return True
-
-        return False
-
-    def player_in_check(self) -> bool:
-        # TODO:
-
-        return False
-
-    def player_in_checkmate(self) -> bool:
-        # TODO:
-
-        return False
-
-    def can_castle(self) -> bool:
-        # TODO: Check that the king doesn't move into check
-
-        # TODO: Check that the king hasn't moved in the game so far
-
-        # TODO: Check that the castling rook has not moved during the game
-        # We can do this with a bool saying "left_castle_has_moved", etc.
-
-        # Check that there is space for a long castle
-        if self.board[-1][:5] == ["R", "", "", "", "K"]:
-            return True
-
-        if self.board[-1][4:] == ["K", "", "", "R"]:
-            return True
-
-        return False
+        self.result = ""
+        self.prev_move_played = "" # Holds the previous move.
+        self.white_king_pos = "e1" # Position of both kings
+        self.black_king_pos = "e8"
+        self.whoseTurn: bool = True # Boolean value keeping track of whose turn it is, True = white's turn, False = black's turn
 
 
-    def update_board(self, move: str, kingside_castle: bool, queenside_castle: bool, en_passant: bool): 
-        # Update the board. 
-        # capture: whether or not the move captured another piece. 
+    def display_board(self):
+        for row in self.board:
+            print([p if p != "" else " " for p in row])
 
-        start_tile = move[0:2] 
+    '''
+    PIECE-SPECIFIC FUNCTIONS
+    '''
+
+    ''' PAWN '''
+    def pawn_movement_valid(self, move: str, piece_on_end_tile: bool) -> tuple[bool, bool, bool, bool]:
+        isPawnMoveAllowed = True
+        pawn_prom = False
+        en_passant = False
+        capture = piece_on_end_tile
+
+        # Convert chess notation to board indices.
+        start_tile = move[0:2]
         end_tile = move[2:4]
+        row, col = self.chess_notation_to_indices(start_tile)
+        target_row, target_col = self.chess_notation_to_indices(end_tile)
 
-        start_row, start_col = self.chess_notation_to_indices(start_tile) 
-        end_row, end_col = self.chess_notation_to_indices(end_tile) 
-
-        # Move the piece. 
-        self.board[end_row][end_col] = self.board[start_row][start_col]
-        self.board[start_row][start_col] = ''
-
-        if kingside_castle == True:
-            # King as already moved. 
-            # Move the rook. 
-            self.board[end_row][end_col - 1] = self.board[start_row][start_col + 3]
-            self.board[start_row][start_col + 3] = ''
-
-        if queenside_castle == True:
-            # King as already moved. 
-            # Move the rook. 
-            self.board[end_row][end_col + 1] = self.board[start_row][start_col - 4]
-            self.board[start_row][start_col - 4] = ''
-
-        if en_passant == True:
-            # The pawn has been moved. 
-            # Must remove the captured pawn from the board. 
-            self.board[start_row][end_col] = ''
-
-        return
-        
-
-    def chess_notation(self, move: str, valid: bool, piece: object, capture: bool,
-                       kingside_castle: bool, queenside_castle: bool, pawn_prom: bool) -> str:
-        # Format: {piece if not pawn}{starting pos}{x if capture}{ending pos}{=Q if promotion}
-        # Everything should be lowercase except for '=Q' for promotion. 
-        notation = ""
-
-        if valid == False:
-            # Return empty string if the move is invalid. 
-            return notation
-        
-        elif kingside_castle == True:
-            return "0-0"
-        
-        elif queenside_castle == True: 
-            return "0-0-0"
-        
-        else: 
-            if (piece.piece_type != 'p') or (piece.piece_type != 'P'): 
-                # It is not a pawn. 
-                notation = notation + piece.piece_type.lower() # check that this is proper string. 
-            
-            if capture == True: 
-                notation = notation + move[0:2].lower() + "x" + move[2:4].lower()
-            else: # Nothing was captured. 
-                notation = notation + move.lower()
-
-            if pawn_prom == True: 
-                notation = notation + "=Q"
-            
-            return notation
-        
-    
-    def dir_increment_decrement(start: int, end: int) -> int:
-        # Function to decide if we increment or decrement from start to end. 
-        if start - end > 0:
-            return -1 
-        else:
-            return 1
-        
-    
-    def is_same_tile(self, move: str) -> bool:
-        if (move[0:2] == move[2:4]):
-            return True
-        else:
+        # Checks if pawn is moving forward. Can't move backwards!
+        moveForward = self.is_pawn_moving_forward(row, col, target_row)
+        if (not moveForward):
             return False
-        
 
+        # Check if the pawn is moving forward either one or two squares.
+        if col == target_col:
+            # Check if the pawn is moving one square forward
+            if abs(row - target_row) == 1:
+                isPawnMoveAllowed = True
+                pawn_prom = self.pawn_promotion(row, col, target_row, target_col)
+
+            # If pawn is moving two steps forward, it must be its first move.
+            if abs(row - target_row) == 2:
+                if(self.boardOfPieceInstances[row][col].hasMoved == True):
+                    isPawnMoveAllowed = False
+
+            # For a pawn moving forward, make sure that there is nothing on the end tile or in between.
+            if piece_on_end_tile or self.pieces_between_rows(row, target_row, col):
+                isPawnMoveAllowed = False
+
+        # Check if the pawn is moving diagonally. Can do so for capture.
+        if abs(row - target_row) == 1 and abs(col - target_col) == 1:
+                if piece_on_end_tile == True:
+                    # End tile had opponent's piece.
+                    # Correctly moved diagonal to capture.
+                    isPawnMoveAllowed = True
+
+                else: # End tile doesn't have a piece on it. Allowed for en passant.
+                    en_passant = self.is_en_passant(move)
+                    capture = True
+
+                    if en_passant:
+                        isPawnMoveAllowed = True
+                    else: # Not en passant and no piece was captured.
+                        isPawnMoveAllowed = False
+
+        return isPawnMoveAllowed, capture, pawn_prom, en_passant
+
+    ''' PAWN HELPER '''
+    def is_pawn_moving_forward(self, row, col, target_row) -> bool:
+        isPawnMovingForward = False
+
+        if self.boardOfPieceInstances[row][col].piece_color == "black" and int(row) < int(target_row):
+            isPawnMovingForward = True
+
+        if self.boardOfPieceInstances[row][col].piece_color == "white" and int(row) > int(target_row):
+            isPawnMovingForward = True
+
+        else:
+            isPawnMovingForward = False
+
+        return isPawnMovingForward
+
+    ''' ROOK '''
     def rook_movement_valid(self, move: str) -> bool:
-        start_tile = move[0:2] 
+        start_tile = move[0:2]
         end_tile = move[2:4]
 
-        start_row, start_col = self.chess_notation_to_indices(start_tile) 
-        end_row, end_col = self.chess_notation_to_indices(end_tile) 
+        start_row, start_col = self.chess_notation_to_indices(start_tile)
+        end_row, end_col = self.chess_notation_to_indices(end_tile)
 
-        # Check that the rook is moving only horizontally or vertically. 
-        # Either the start and end file must be the same or the start and end rank must be the same, but 
-        # can't both be true. 
-        # There is already another function to check that it is not staying in the same tile. 
-        if (start_row != end_row) and (start_col != end_col): 
+        # Check that the rook is moving only horizontally or vertically.
+        # Either the start and end file must be the same or the start and end rank must be the same, but
+        # can't both be true.
+        # There is already another function to check that it is not staying in the same tile.
+        if (start_row != end_row) and (start_col != end_col):
             return False
-        
-        # Check that the rook is not jumping over any pieces. 
-        # Doesn't check if it has captured a piece. 
-        if start_row == end_row: # Moving along a row, col changes. Board[var][const]. Board[rank][file]. Board[row][col]. 
 
-            direction = self.dir_increment_decrement(start_col, end_col)
-            
-            for i in range(start_row + direction, end_row, direction):
-                if (self.board[start_row][i] != ''):
-                    return False
-                
-        elif start_col == end_col: # Moving along a col, row changes. 
+        # Check that the rook is not jumping over any pieces.
+        # Doesn't check if it has captured a piece.
+        if start_row == end_row: # Moving along a row, col changes. Board[var][const]. Board[rank][file]. Board[row][col].
+            if self.pieces_between_cols(start_col, end_col, start_row):
+                return False
 
-            direction = self.dir_increment_decrement(start_row, end_row)
+        elif start_col == end_col: # Moving along a col, row changes.
+            if self.pieces_between_rows(start_row, end_row, start_col):
+                return False
 
-            for i in range(start_row + direction, end_row, direction):
-                if (self.board[i][start_col] != ''):
-                    return False
-                
-        else: # Rook is moving properly. 
+        else: # Rook is moving properly.
             return True
 
+        return False
 
+    ''' KNIGHT '''
+    def knight_movement_valid(self, move: str) -> bool:
+        isKnightMoveAllowed = True
+        start_tile = move[0:2]
+        target_tile = move[2:4]
+
+        row, col = self.chess_notation_to_indices(start_tile)
+        target_row, target_col = self.chess_notation_to_indices(target_tile)
+
+        # check for proper movement
+        if abs(row - target_row) == 2 and abs(col - target_col) == 1:
+            isKnightMoveAllowed = True
+
+        elif abs(row - target_row) == 1 and abs(col - target_col) == 2:
+            isKnightMoveAllowed = True
+
+        else:
+            isKnightMoveAllowed = False
+
+        return isKnightMoveAllowed
+
+    ''' BISHOP '''
     def bishop_movement_valid(self, move: str) -> bool:
-        start_tile = move[0:2] 
+        start_tile = move[0:2]
         end_tile = move[2:4]
 
-        start_row, start_col = self.chess_notation_to_indices(start_tile) 
-        end_row, end_col = self.chess_notation_to_indices(end_tile) 
+        start_row, start_col = self.chess_notation_to_indices(start_tile)
+        end_row, end_col = self.chess_notation_to_indices(end_tile)
 
         # Check that the bishop moved only diagonally. The distance moved horizontally should be
-        # the same as the distance moved vertically. 
+        # the same as the distance moved vertically.
         dist_hor = abs(start_row - end_row)
         dist_ver = abs(start_col - end_col)
 
-        if (dist_hor != dist_ver): # Bishop not moving diagonally properly. 
+        if (dist_hor != dist_ver): # Bishop not moving diagonally properly.
             return False
-        
-        # Check that the bishop is not jumping over any pieces. 
-        direction_hor = self.dir_increment_decrement(start_col, end_col)
-        direction_ver = self.dir_increment_decrement(start_row, end_row)
 
-        for i,j in zip(range(start_col + direction_hor, end_col, direction_hor), 
-                       range(start_row + direction_ver, end_row, direction_ver)):
-            if (self.board[j][i] != ''):
-                return False
-            
+        # Check that the bishop is not jumping over any pieces.
+        if self.pieces_along_diagonal(start_row, end_row, start_col, end_col):
+            return False
+
         return True
-    
 
+    ''' YASS QUEEN '''
     def queen_movement_valid(self, move: str) -> bool:
         # The queen's can move in any direction, as long as it's in a straight line.
-        # Horizontal, vertical, and diagonal. Basically a combination of rook and bishop movements. 
-        hor_or_vert = self.rook_movement(self, move) # <- CHECK THIS SYNTAX. 
-        diag = self.bishop_movement(self, move)
+        # Horizontal, vertical, and diagonal. Basically a combination of rook and bishop movements.
+        hor_or_vert = self.rook_movement_valid(move)
+        diag = self.bishop_movement_valid(move)
 
         # Queen is moving properly if it moves either like a rook or a bishop.
-        if (hor_or_vert or diag):
-            return True
-        else: 
-            return False
+        return hor_or_vert or diag
 
-    # supposed to take in 3 args not 2
-    def is_valid_move(self, start_pos: str, end_pos: str, move: str): # FINISH THIS HERE. 
+    
+    def is_valid_move(self, move: str): # FINISH THIS HERE. 
         valid = True 
         capture = False 
         kingside_castle = False 
@@ -277,14 +249,14 @@ class ChessLogic:
             # Checking piece specific valid/invalid. 
             match piece: # <- MIGHT HAVE TO END UP USING IF STATEMENTS INSTEAD. 
                 case 'p': # Pawn 
-                    valid = self.move_pawn()
+                    valid = self.is_valid_pawn()
 
                     if valid:
                         pawn_prom = self.is_pawn_prom()
                         en_passant = self.is_en_passant()
 
                 case 'n': # knight
-                    valid = self.move_knight() # check
+                    valid = self.knight_movement_valid() # check
                 
                 case 'b': # bishop
                     valid = self.bishop_movement_valid(self, move)
@@ -424,9 +396,17 @@ class ChessLogic:
         # check if the starting tile is a pawn
         
         # Convert chess notation to board indices correctly
+        file = start_tile[0]  # 'a'-'h'
+        rank = start_tile[1]  # '1'-'8'
 
-        row, col = self.chess_notation_to_indices(start_tile)
-        target_row, target_col = self.chess_notation_to_indices(target_tile)
+        col = ord(file) - ord('a')  # 0-7
+        row = 8 - int(rank)         # 0-7 (rank 1 = row 7)
+
+        target_file = target_tile[0]  # 'a'-'h'
+        target_rank = target_tile[1]  # '1'-'8'
+
+        target_col = ord(target_file) - ord('a')  # 0-7
+        target_row = 8 - int(target_rank)         # 0-7 (rank 1 = row 7)
 
         moveForward = self.make_sure_piece_is_moving_forward(row, col, target_row)
 
@@ -477,8 +457,19 @@ class ChessLogic:
         # Handle moving logic after determining that the move is valid    
         if (isPawnMoveAllowed == True):
             # make the move
-            self.update_board(start_tile, target_tile)
-            
+
+            # update the main board
+            self.board[target_row][target_col] = self.board[row][col]
+            self.board[row][col] = ''
+
+            # update the board of piece instances
+            self.boardOfPieceInstances[target_row][target_col] = self.boardOfPieceInstances[row][col]
+            self.boardOfPieceInstances[row][col] = None
+
+            # update the piece instance
+            self.boardOfPieceInstances[target_row][target_col].currPos = (target_col, target_row)
+            self.boardOfPieceInstances[target_row][target_col].numMoves += 1
+            self.boardOfPieceInstances[target_row][target_col].hasMoved = True
 
             # print the board
             #for row in self.board:
@@ -487,7 +478,7 @@ class ChessLogic:
 
 
 
-            return (isPawnMoveAllowed, False, False, False)
+        return (isPawnMoveAllowed, False, False, False)
 
         # return False
 
@@ -505,48 +496,10 @@ class ChessLogic:
         pass
     
     def move_knight(self, start_tile: str, target_tile: str) -> bool:
-
-        isKnightMoveAllowed = True
-
-        row, col = self.chess_notation_to_indices(start_tile)
-        target_row, target_col = self.chess_notation_to_indices(target_tile)
-
-        if self.board[row][col] == '':
-            print("No piece at the starting position")
-            return False
-
-        # check if the starting tile is a knight
-        if self.boardOfPieceInstances[row][col].piece_type != 'n' and self.boardOfPieceInstances[row][col].piece_type != 'N':
-            print("Not a knight... invalid move")
-            isKnightMoveAllowed = False
-            return isKnightMoveAllowed
-
-        # check if the target tile doesn't already have a piece of the same color
-        if self.board[target_row][target_col] != '':
-            if self.boardOfPieceInstances[target_row][target_col].piece_color == self.boardOfPieceInstances[row][col].piece_color:
-                isKnightMoveAllowed = False
-        
-        # check for proper movement
-        if abs(row - target_row) == 2 and abs(col - target_col) == 1:
-            isKnightMoveAllowed = True
-        
-        elif abs(row - target_row) == 1 and abs(col - target_col) == 2:
-            isKnightMoveAllowed = True
-        
-        else:
-            isKnightMoveAllowed = False
-        
-        if (isKnightMoveAllowed == True):
-            # update the boards
-            self.update_board(start_tile, target_tile)
-            
-            return isKnightMoveAllowed
     
         pass
 
     def move_bishop(self, start_tile: str, target_tile: str) -> bool:
-        
-
         pass
 
     def move_rook(self, start_tile: str, target_tile: str) -> tuple[bool, bool]:
@@ -566,6 +519,15 @@ class ChessLogic:
     def moved_to_check():
         pass
 
+
+# creates an instance of ChessLogic
+gameLogic = ChessLogic()
+
+# jash testing purposes?
+print("e2 to e4:", gameLogic.move_pawn("e2", "e4"))  # Valid: White pawn moves two squares forward from start
+print("d7 to d5:", gameLogic.move_pawn("d7", "d5"))
+print("e4 to d5:", gameLogic.move_pawn("e4", "d5"))  # Valid: White pawn captures black pawn
+
     def chess_notation_to_indices(self, tile: str) -> tuple[int, int]:
         file = tile[0]  # 'a'-'h'
         rank = tile[1]  # '1'-'8'
@@ -574,6 +536,13 @@ class ChessLogic:
         row = 8 - int(rank)         # 0-7 (rank 1 = row 7)
 
         return (row, col)
+
+
+    def index_to_move(self, row: int, col: int):
+        c = chr(col + ord("a"))
+        r = abs(row - 8)
+        return f"{c}{r}"
+
 
     def own_piece_at_tile(self, tile: str) -> bool:
         # potential error, using isupper() or islower() on empty string '' or ' ' could raise error?
@@ -590,22 +559,6 @@ class ChessLogic:
         return False  # default
 
 		
-    def update_board(self, tile: str, target_tile: str):
-        row, col = self.chess_notation_to_indices(tile)
-        target_row, target_col = self.chess_notation_to_indices(target_tile)
-        # update the main board
-        self.board[target_row][target_col] = self.board[row][col]
-        self.board[row][col] = ''
-
-        # update the board of piece instances
-        self.boardOfPieceInstances[target_row][target_col] = self.boardOfPieceInstances[row][col]
-        self.boardOfPieceInstances[row][col] = None
-
-        # update the piece instance
-        self.boardOfPieceInstances[target_row][target_col].currPos = (target_col, target_row)
-        self.boardOfPieceInstances[target_row][target_col].numMoves += 1
-        self.boardOfPieceInstances[target_row][target_col].hasMoved = True
-
     def opponent_piece_at_tile(self, tile: str) -> bool:
         row, col = self.chess_notation_to_indices(tile)
 
@@ -619,12 +572,3 @@ class ChessLogic:
 
         return False # default
 
-
-# creates an instance of ChessLogic
-gameLogic = ChessLogic()
-
-# jash testing purposes?
-print("e2 to e4:", gameLogic.move_pawn("e2", "e4"))  # Valid: White pawn moves two squares forward from start
-print("d7 to d5:", gameLogic.move_pawn("d7", "d5"))
-print("e4 to d5:", gameLogic.move_pawn("e4", "d5"))  # Valid: White pawn captures black pawn
-print("g1 to f3:", gameLogic.move_knight("g1", "f3"))
