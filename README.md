@@ -8,3 +8,19 @@ Group members: Joe Vogel, Cait Chau, Jash Patel, and Jake Roggenbuck
 3. Create a virtual environment for Python development using Docker  
 4. Work on assigned tasks  
 
+## Testing
+
+#### Testing
+
+Run `pytest` to view tests
+
+#### Coverage
+
+Run the following to see coverage:
+
+```sh
+pytest --cov=. --cov-report=html
+firefox htmlcov/index.html
+```
+
+You can use any browser.

@@ -12,6 +12,17 @@ def test_chess_notation_to_indices():
     assert p.chess_notation_to_indices("b1") == (7, 1)
 
 
+def test_repr_and_str():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    assert "K" in p.board.__str__()
+    assert "k" in p.board.__str__()
+
+    assert "Q" in p.board.__repr__()
+    assert "q" in p.board.__repr__()
+
+
 def test_index_to_move():
     from logic.chess_logic import ChessLogic
     p = ChessLogic()
@@ -281,6 +292,38 @@ def test_update_king_position():
 
     p.update_king_position("e3")
     assert p.white_king_pos == "e1"  # Should this fail?
+
+
+def test_king_movement_valid():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    p.play_move("e2e4")
+    p.display_board()
+
+    assert p.king_movement_valid("e1e2") == (True, False, False)  # Should be valid
+
+    assert p.king_movement_valid("e1e10") == (False, False, False)  # Should be invalid
+
+
+def test_is_en_passant():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    p.board = [
+            ['', '', '', '', '', '', 'k', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', 'P', 'p', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', 'K'],
+    ]
+
+    assert not p.is_en_passant("d5d6")  # Not a valid en passant
+
+    assert p.is_en_passant("d5e6")  # Should be valid en passant move
 
 
 def test_moving_piece():
