@@ -65,6 +65,9 @@ class ChessLogic:
         self.whoseTurn: bool = True # Boolean value keeping track of whose turn it is, True = white's turn, False = black's turn
 
 
+    def display_board(self):
+        for row in self.board:
+            print([p if p != "" else " " for p in row])
 
     '''
     PIECE-SPECIFIC FUNCTIONS

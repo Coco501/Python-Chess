@@ -134,7 +134,7 @@ def test_pawn_promotion_black():
     x, y = p.chess_notation_to_indices("d2")
     nx, ny = p.chess_notation_to_indices("d1")
 
-    print(p.board)
+    p.display_board()
 
     assert p.pawn_promotion(x, y, nx, ny)
 
@@ -153,7 +153,7 @@ def test_player_in_check():
     a, b = p.chess_notation_to_indices("e5")
     p.board[a][b] = "q"
 
-    print(p.board)
+    p.display_board()
 
     assert p.player_in_check("e1")  # TODO: THIS SHOULD WORK
 
