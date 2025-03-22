@@ -157,6 +157,47 @@ def test_player_in_check():
 
     assert p.player_in_check("e1")  # TODO: THIS SHOULD WORK
 
+def test_checkmate1():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    p.board = [
+			['', 'n', '', '', 'k', 'b', '', 'r'],
+			['p', '', '', '', '', 'p', 'p', 'p'],
+			['', '', '', '', 'q', '', '', ''],
+			['', '', '', '', 'p', '', 'B', ''],
+			['', '', '', '', 'P', '', '', ''],
+			['', '', '', '', '', '', '', ''],
+			['P', 'P', 'P', '', '', 'P', 'P', 'P'],
+			['', '', 'K', 'R', '', '', '', ''],
+    ]
+
+    p.whoseTurn = False # Black's turn
+
+    assert p.player_in_future_check("e8")
+
+
+def test_checkmate2():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    p.board = [
+			['', '', '', '', '', '', '', ''],
+			['', '', 'k', '', '', '', '', ''],
+			['', '', '', '', '', '', '', ''],
+			['', '', '', '', '', '', '', ''],
+			['', '', '', '', '', '', '', 'Q'],
+			['', '', '', '', '', '', '', ''],
+			['', '', '', '', '', '', '', ''],
+			['', 'R', '', 'R', '', '', 'K', ''],
+    ]
+
+    p.whoseTurn = False # Black's turn
+    assert p.player_in_future_check("c7")
+
+    p.whoseTurn = True
+    assert not p.player_in_future_check("g1")
+
 
 def test_moving_piece():
     pass
