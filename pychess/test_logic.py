@@ -254,6 +254,33 @@ def test_play_move_many():
     assert p.board[5][4] == "P"  # This space should have a pawn
 
 
+def test_play_move_white_and_black_pawn():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    # Move white pawn
+    p.play_move("e2e4")
+    assert p.board[4][4] == "P"
+    assert p.board[6][4] == ""
+
+    # Move black pawn
+    p.play_move("e7e6")
+    p.display_board()
+    assert p.board[1][4] == " "  # This space should now be empty
+    assert p.board[2][4] == "p"  # This space should have a pawn
+
+    # Move white pawn
+    p.play_move("d2d4")
+    assert p.board[4][3] == "P"
+    assert p.board[6][3] == ""
+
+    # Move black pawn
+    p.play_move("d7d6")
+    p.display_board()
+    assert p.board[1][3] == " "  # This space should now be empty
+    assert p.board[2][3] == "p"  # This space should have a pawn
+
+
 def test_is_game_over():
     from logic.chess_logic import ChessLogic
     p = ChessLogic()
