@@ -193,10 +193,31 @@ def test_checkmate2():
     ]
 
     p.whoseTurn = False # Black's turn
-    assert p.player_in_future_check("c7")
+    assert not p.player_in_future_check("c7")
 
     p.whoseTurn = True
     assert not p.player_in_future_check("g1")
+
+
+def test_checkmate3():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    p.board = [
+			['', '', '', '', '', 'r', 'k', ''],
+			['', '', '', '', '', 'p', '', 'p'],
+			['', '', '', '', '', '', '', ''],
+			['', '', '', '', '', '', '', ''],
+			['', '', '', '', '', '', '', ''],
+			['', '', '', '', '', '', '', ''],
+			['', 'B', '', '', '', '', '', ''],
+			['', '', '', '', '', '', 'R', 'K'],
+    ]
+
+    p.whoseTurn = True
+    assert p.player_in_check("g8")
+    assert p.player_in_future_check("g8")
+    assert p.is_game_over() == tuple[True, False, False]
 
 
 def test_moving_piece():
