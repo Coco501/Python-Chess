@@ -336,78 +336,9 @@ class ChessLogic:
             queenside_castle = True
 
         # TODO: Check that the king is not passing through or land on a square that is under attack.
-        #
 
         return valid, kingside_castle, queenside_castle
 
-
-    '''
-    def player_in_check(self, move: str) -> bool:
-
-        # TODO:
-        # From king's position, try combinatations of ways pieces can move.
-            # Start at king, and increment outwards.
-                # Check along the vertical until we hit a piece.
-                    # If we do, check if that piece is an opponent's piece.
-                    # Check if that piece is a rook or queen, something that can move in that way.
-                        # If true, then the king is in check.
-                # Check along the horizontal until we hit a piece.
-                    # If we do, check if that piece is an opponent's piece.
-                        # Check if that piece is a rook or queen, something that can move in that way.
-                            # If true, then the king is in check.
-
-
-        # TODO:
-        # From king's position, try combinatations of ways pieces can move.
-
-        kings_rank, kings_file = self.chess_notation_to_indices(move)
-
-        # TODO:
-        # From king's position, try combinatations of ways pieces can move.
-
-        # Check the rank
-        rank_found_piece = False
-        for test_file in range(0, 8):
-            piece = self.board[kings_rank][test_file]
-
-            # The pieces that can move up and down the whole board
-            # TODO: Check the other color's pieces, not the lower case ones
-            if piece in ["q", "r"]:
-                return True
-
-        # Check the file
-        file_found_piece = False
-        for test_rank in range(0, 8):
-            piece = self.board[test_rank][kings_file]
-
-            # TODO: Check the other color's pieces, not the lower case ones
-            if piece in ["q", "r"]:
-                return True
-
-            # Start at king, and increment outwards.
-                # Check along the vertical until we hit a piece.
-                    # If we do, check if that piece is an opponent's piece.
-                    # Check if that piece is a rook or queen, something that can move in that way.
-                        # If true, then the king is in check.
-                # Check along the horizontal until we hit a piece.
-                    # If we do, check if that piece is an opponent's piece.
-                        # Check if that piece is a rook or queen, something that can move in that way.
-                            # If true, then the king is in check.
-
-                # Check along diagonals.
-                    # Check for queen, bishop, rook.
-                # Check the spaces that a knight can be.
-                    # Change in 2 along one axis, change in 1 along the other axis.
-
-
-        # TODO: We'll need a way to keep track of where the king is.
-            # Probably just add another class variable.
-
-        # Also we need to check both kings, because current player can't leave their king in check,
-        # and we also have to check if they've put the opponent in check.
-
-        return False
-    '''
 
     def player_in_check(self, king_pos: str) -> bool:
         # check if any of the opponent's pieces can move to the king's position
@@ -438,6 +369,7 @@ class ChessLogic:
         return False
 
     ''' CHECKMATE '''
+    # DEPRECATED
     def player_in_checkmate(self) -> bool:
         # TODO:
         # Call check from all of the possible spaces a king can move to? 8 spaces.
@@ -464,6 +396,7 @@ class ChessLogic:
         return False
 
     ''' STALEMATE '''
+    # DEPRECATED
     def stalemate(self) -> bool:
         # If player is not in check, but there is no move the player can make without putting their king in check.
 
@@ -750,7 +683,7 @@ class ChessLogic:
                 valid, kingside_castle, queenside_castle = self.king_movement_valid(move)
 
             # Check for checks, checkmates, stalemates.
-            white_win, black_win, draw = self.is_game_over()
+            # white_win, black_win, draw = self.is_game_over() # GAMEBREAKING, WHITE INSTANTLY WINS TODO TODO TODO IMPORTANT
             # TODO DO WE NEED TO ONLY CHECK FOR CHECK IF THERE WAS A VALID MOVE PLAYED?
 
         return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, white_win, black_win, draw
@@ -791,6 +724,7 @@ class ChessLogic:
 
         return True
 
+    # TODO, white instantly wins after one turn right now, player in check function not working?
     def is_game_over(self) -> tuple[bool, bool, bool]:
         check_player = False
         check_opponent = False
