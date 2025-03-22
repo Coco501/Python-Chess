@@ -267,6 +267,22 @@ def test_castle_chess_notation():
     assert p.chess_notation("e6e6", *([False] * 5)) == ""  # Check invalid
 
 
+def test_update_king_position():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    # TODO: update_king_position needs a comment about what it actually does
+
+    p.update_king_position("e1")
+    assert p.white_king_pos == "e1"
+
+    p.update_king_position("e2")
+    assert p.white_king_pos == "e1"  # Should this fail?
+
+    p.update_king_position("e3")
+    assert p.white_king_pos == "e1"  # Should this fail?
+
+
 def test_moving_piece():
     pass
 
