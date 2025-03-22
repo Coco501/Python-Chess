@@ -326,6 +326,23 @@ def test_is_en_passant():
     assert p.is_en_passant("d5e6")  # Should be valid en passant move
 
 
+def test_is_valid_castle():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    x1, y1 = p.chess_notation_to_indices("e1")
+    x2, y2 = p.chess_notation_to_indices("c1")
+    assert p.is_valid_castle(x1, y1, x2, y2) == (True, False, True)
+
+    x1, y1 = p.chess_notation_to_indices("e1")
+    x2, y2 = p.chess_notation_to_indices("g1")
+    assert p.is_valid_castle(x1, y1, x2, y2) == (True, True, False)
+
+    x1, y1 = p.chess_notation_to_indices("e1")
+    x2, y2 = p.chess_notation_to_indices("e2")
+    assert p.is_valid_castle(x1, y1, x2, y2) == (False, False, False)
+
+
 def test_moving_piece():
     pass
 
