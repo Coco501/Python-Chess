@@ -591,22 +591,22 @@ class ChessLogic:
         end_row, end_col = self.chess_notation_to_indices(end_tile)
 
         # Update the board of piece instances.
-        self.boardOfPieceInstances[end_row][end_col].piece_type = self.boardOfPieceInstances[start_row][start_col].piece_type
-        self.boardOfPieceInstances[end_row][end_col].piece_color = self.boardOfPieceInstances[start_row][start_col].piece_color
+        self.boardOfPieceInstances[end_row][end_col] = self.boardOfPieceInstances[start_row][start_col]
+        self.boardOfPieceInstances[end_row][end_col] = self.boardOfPieceInstances[start_row][start_col]
         self.boardOfPieceInstances[start_row][start_col] = None
 
         if kingside_castle == True:
             # King as already moved.
             # Move the rook.
-            self.boardOfPieceInstances[end_row][end_col - 1].piece_type = self.boardOfPieceInstances[start_row][start_col + 3].piece_type
-            self.boardOfPieceInstances[end_row][end_col - 1].piece_color = self.boardOfPieceInstances[start_row][start_col + 3].piece_color
+            self.boardOfPieceInstances[end_row][end_col - 1] = self.boardOfPieceInstances[start_row][start_col + 3]
+            self.boardOfPieceInstances[end_row][end_col - 1] = self.boardOfPieceInstances[start_row][start_col + 3]
             self.boardOfPieceInstances[start_row][start_col + 3] = None
 
         if queenside_castle == True:
             # King as already moved.
             # Move the rook.
-            self.boardOfPieceInstances[end_row][end_col + 1].piece_type = self.boardOfPieceInstances[start_row][start_col - 4].piece_type
-            self.boardOfPieceInstances[end_row][end_col + 1].piece_color = self.boardOfPieceInstances[start_row][start_col - 4].piece_color
+            self.boardOfPieceInstances[end_row][end_col + 1] = self.boardOfPieceInstances[start_row][start_col - 4]
+            self.boardOfPieceInstances[end_row][end_col + 1] = self.boardOfPieceInstances[start_row][start_col - 4]
             self.boardOfPieceInstances[start_row][start_col - 4] = None
 
         if en_passant == True:
