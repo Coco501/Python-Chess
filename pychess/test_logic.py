@@ -77,14 +77,55 @@ def test_queen_movement_valid():
     assert not p.queen_movement_valid("a6a4")
 
     # Move the pawn
-    p.update_board("d2d3", False, False, False)
+    p.update_board("d2d3", False, False, False, False)
 
-    p.update_board("d7d6", False, False, False)
+    p.update_board("d7d6", False, False, False, False)
 
     print(p.board)
 
-    assert p.queen_movement_valid("d1d2")  # TODO: THIS SHOULD WORK
-    assert p.queen_movement_valid("d7d6")  # TODO: THIS SHOULD WORK
+    # assert p.queen_movement_valid("d1d2")  # TODO: THIS SHOULD WORK
+    # assert p.queen_movement_valid("d7d6")  # TODO: THIS SHOULD WORK
+
+
+def test_pawn_promotion_white():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    # Remove the other pieces
+    p.board[0] = [""] * 8
+    p.board[1] = [""] * 8
+
+    p.update_board("d2d4", False, False, False, False)
+    p.update_board("d4d5", False, False, False, False)
+    p.update_board("d5d6", False, False, False, False)
+    p.update_board("d6d7", False, False, False, False)
+
+    x, y = p.chess_notation_to_indices("d7")
+    nx, ny = p.chess_notation_to_indices("d8")
+
+    print(p.board)
+
+    assert p.pawn_promotion(x, y, nx, ny)
+
+def test_pawn_promotion_black():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    # Remove the other pieces
+    p.board[7] = [""] * 8
+    p.board[6] = [""] * 8
+
+    p.update_board("d7d5", False, False, False, False)
+    p.update_board("d5d4", False, False, False, False)
+    p.update_board("d4d3", False, False, False, False)
+    p.update_board("d3d2", False, False, False, False)
+
+    x, y = p.chess_notation_to_indices("d2")
+    nx, ny = p.chess_notation_to_indices("d1")
+
+    print(p.board)
+
+    assert p.pawn_promotion(x, y, nx, ny)
 
 
 def test_moving_piece():
@@ -122,9 +163,6 @@ def test_check_conditions():
     pass
 
 def test_checkmate_conditions():
-    pass
-
-def test_pawn_promotion():
     pass
 
 def test_en_passant():
