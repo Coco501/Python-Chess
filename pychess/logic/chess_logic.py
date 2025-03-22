@@ -315,6 +315,7 @@ class ChessLogic:
         return valid, kingside_castle, queenside_castle
 
 
+<<<<<<< HEAD
     def player_in_check(self) -> bool:
         # TODO:
         # From king's position, try combinatations of ways pieces can move. 
@@ -327,6 +328,49 @@ class ChessLogic:
                     # If we do, check if that piece is an opponent's piece. 
                         # Check if that piece is a rook or queen, something that can move in that way. 
                             # If true, then the king is in check. 
+=======
+    def player_in_check(self, move: str) -> bool:
+        # TODO:
+        # From king's position, try combinatations of ways pieces can move.
+
+        kings_rank, kings_file = self.chess_notation_to_indices(move)
+
+        # Check the rank
+        rank_found_piece = False
+        for test_file in range(0, 8):
+            piece = self.boardOfPieceInstances[kings_rank][test_file]
+
+            if not rank_found_piece:
+                # The pieces that can move up and down the whole board
+                # TODO: Check the other color's pieces, not the lower case ones
+                if piece.piece_type in ["q", "r"]:
+                    return True
+                else:
+                    rank_found_piece = True
+
+        # Check the file
+        file_found_piece = False
+        for test_rank in range(0, 8):
+            piece = self.boardOfPieceInstances[test_rank][kings_file]
+
+            if not file_found_piece:
+
+                # TODO: Check the other color's pieces, not the lower case ones
+                if piece.piece_type in ["q", "r"]:
+                    return True
+                else:
+                    file_found_piece = True
+
+            # Start at king, and increment outwards.
+                # Check along the vertical until we hit a piece.
+                    # If we do, check if that piece is an opponent's piece.
+                    # Check if that piece is a rook or queen, something that can move in that way.
+                        # If true, then the king is in check.
+                # Check along the horizontal until we hit a piece.
+                    # If we do, check if that piece is an opponent's piece.
+                        # Check if that piece is a rook or queen, something that can move in that way.
+                            # If true, then the king is in check.
+>>>>>>> 5f936fa (Change to use move string)
                 # Check along diagonals.
                     # Check for queen, bishop, rook. 
                 # Check the spaces that a knight can be. 
