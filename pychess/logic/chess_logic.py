@@ -132,13 +132,14 @@ class ChessLogic:
         if self.boardOfPieceInstances[row][col].piece_color == "black" and int(row) < int(target_row):
             isPawnMovingForward = True
 
-        if self.boardOfPieceInstances[row][col].piece_color == "white" and int(row) > int(target_row):
+        elif self.boardOfPieceInstances[row][col].piece_color == "white" and int(row) > int(target_row):
             isPawnMovingForward = True
 
         else:
             isPawnMovingForward = False
 
         return isPawnMovingForward
+
 
     ''' ROOK '''
     def rook_movement_valid(self, move: str) -> bool:
