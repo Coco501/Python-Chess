@@ -431,8 +431,8 @@ class ChessLogic:
 
         king_pos = self.index_to_move(i, j)
 
-        # Check everywhere around the king
-        self.player_in_check(king_pos)
+        # TODO: Check everywhere around the king
+        # Similar to this self.player_in_check(king_pos)
 
         return False
 
