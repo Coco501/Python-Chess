@@ -166,10 +166,7 @@ class ChessLogic:
             if self.pieces_between_rows(start_row, end_row, start_col):
                 return False
 
-        else: # Rook is moving properly.
-            return True
-
-        return False
+        return True
 
     ''' KNIGHT '''
     def knight_movement_valid(self, move: str) -> bool:
