@@ -418,7 +418,7 @@ class ChessLogic:
         for row in range(8):
             for col in range(8):
                 move: str = self.index_to_move(row, col) + king_pos
-                if self.boardOfPieceInstances[row][col] is not None:
+                if self.boardOfPieceInstances[row][col] is not None and self.boardOfPieceInstances[kingrow][kingcol] is not None:
                     if self.boardOfPieceInstances[row][col].piece_color != self.boardOfPieceInstances[kingrow][kingcol].piece_color:
                         if self.boardOfPieceInstances[row][col].piece_type == 'p' or self.boardOfPieceInstances[row][col].piece_type == 'P':
                             if self.pawn_movement_valid(move, True):
