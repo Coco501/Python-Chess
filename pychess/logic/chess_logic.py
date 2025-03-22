@@ -127,13 +127,13 @@ class ChessLogic:
         isPawnMovingForward = False
 
         if self.boardOfPieceInstances[row][col].piece_color == "black" and int(row) < int(target_row):
-            isPawnMovingForward = False
+            isPawnMovingForward = True
 
         if self.boardOfPieceInstances[row][col].piece_color == "white" and int(row) > int(target_row):
-            isPawnMovingForward = False
+            isPawnMovingForward = True
 
         else:
-            isPawnMovingForward = True
+            isPawnMovingForward = False
 
         return isPawnMovingForward
 
