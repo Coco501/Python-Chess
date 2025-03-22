@@ -583,7 +583,7 @@ class ChessLogic:
     PRINCIPAL FUNCTIONS CALLED BY MAIN
     '''
 
-    def update_piece_and_boardOfPieceInstances(self, move: str, kingside_castle: bool, queenside_castle: bool, en_passant: bool):
+    def update_piece_and_boardOfPieceInstances(self, move: str, kingside_castle: bool, queenside_castle: bool, en_passant: bool, pawn_prom: bool):
         start_tile = move[0:2]
         end_tile = move[2:4]
 
@@ -610,6 +610,13 @@ class ChessLogic:
             # The pawn has been moved.
             # Must remove the captured pawn from the board.
             self.boardOfPieceInstances[start_row][end_col] = ''
+
+        if pawn_prom == True:
+            # Replace the pawn with a queen.
+            if self.whoseTurn == True: # White's turn.
+                self.boardOfPieceInstances[end_row][end_col] = 'Q'
+            else: # Black's turn
+                self.boardOfPieceInstances[end_row][end_col] = 'q'
 
         # Update the piece instance.
         self.boardOfPieceInstances[end_row][end_col].currPos = (end_col, end_row) # ASK JASH ABOUT THE CURRPOS.
@@ -876,7 +883,7 @@ class ChessLogic:
         # If the move is valid, update the board and results.
         if valid:
             self.update_board(move, kingside_castle, queenside_castle, en_passant, pawn_prom) # Update the board.
-            self.update_piece_and_boardOfPieceInstances(move, kingside_castle, queenside_castle, en_passant) # TODO ADD PAWN PROMOTION.
+            self.update_piece_and_boardOfPieceInstances(move, kingside_castle, queenside_castle, en_passant, pawn_prom) 
 
             # Update the previous move to move that was just played.
             self.prev_move_played = move
