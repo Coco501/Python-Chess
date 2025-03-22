@@ -12,6 +12,17 @@ def test_chess_notation_to_indices():
     assert p.chess_notation_to_indices("b1") == (7, 1)
 
 
+def test_repr_and_str():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    assert "K" in p.board.__str__()
+    assert "k" in p.board.__str__()
+
+    assert "Q" in p.board.__repr__()
+    assert "q" in p.board.__repr__()
+
+
 def test_index_to_move():
     from logic.chess_logic import ChessLogic
     p = ChessLogic()
