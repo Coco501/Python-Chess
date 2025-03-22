@@ -566,6 +566,8 @@ class ChessLogic:
             if (self.board[j][i] != ''):
                 return True
 
+        return False
+
 
     def update_king_position(self, square: str):
         row, col = self.chess_notation_to_indices(square)
@@ -886,7 +888,7 @@ class ChessLogic:
         # If the move is valid, update the board and results.
         if valid:
             self.update_board(move, kingside_castle, queenside_castle, en_passant, pawn_prom) # Update the board.
-            self.update_piece_and_boardOfPieceInstances(move, kingside_castle, queenside_castle, en_passant, pawn_prom) 
+            self.update_piece_and_boardOfPieceInstances(move, kingside_castle, queenside_castle, en_passant, pawn_prom)
 
             # Update the previous move to move that was just played.
             self.prev_move_played = move

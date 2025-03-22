@@ -239,8 +239,48 @@ def test_play_move_many():
 
     p.play_move("d2d3")
     p.display_board()
-    assert p.board[6][4] == " "
-    assert p.board[5][4] == "P"
+    assert p.board[6][4] == " "  # This space should now be empty
+    assert p.board[5][4] == "P"  # This space should have a pawn
+
+
+def test_is_game_over():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    assert p.is_game_over() == (False, False, False)  # No one should have won
+
+    p.play_move("e2e4")
+    assert p.board[4][4] == "P"
+    assert p.board[6][4] == ""
+
+    assert p.is_game_over() == (False, False, False)  # No one should have won
+
+
+def test_castle_chess_notation():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    # Check castle with bool
+    assert p.chess_notation("e6e5", True, False, True, False, False) == "0-0"
+    assert p.chess_notation("e6e5", True, False, False, True, False) == "0-0-0"
+
+    assert p.chess_notation("e6e6", *([False] * 5)) == ""  # Check invalid
+
+
+def test_update_king_position():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    # TODO: update_king_position needs a comment about what it actually does
+
+    p.update_king_position("e1")
+    assert p.white_king_pos == "e1"
+
+    p.update_king_position("e2")
+    assert p.white_king_pos == "e1"  # Should this fail?
+
+    p.update_king_position("e3")
+    assert p.white_king_pos == "e1"  # Should this fail?
 
 
 def test_moving_piece():
