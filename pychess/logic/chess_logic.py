@@ -340,14 +340,29 @@ class ChessLogic:
 
         return valid, kingside_castle, queenside_castle
 
-    ''' CHECK '''
-    def player_in_check(self, rank: int, file: int) -> bool:
+
+    def player_in_check(self, move: str) -> bool:
+      
+        # TODO:
+        # From king's position, try combinatations of ways pieces can move. 
+            # Start at king, and increment outwards. 
+                # Check along the vertical until we hit a piece. 
+                    # If we do, check if that piece is an opponent's piece. 
+                    # Check if that piece is a rook or queen, something that can move in that way. 
+                        # If true, then the king is in check. 
+                # Check along the horizontal until we hit a piece. 
+                    # If we do, check if that piece is an opponent's piece. 
+                        # Check if that piece is a rook or queen, something that can move in that way. 
+                            # If true, then the king is in check. 
+
+      
         # TODO:
         # From king's position, try combinatations of ways pieces can move.
 
-        # TODO: Get the position of the king
-        kings_rank = rank
-        kings_file = file
+        kings_rank, kings_file = self.chess_notation_to_indices(move)
+
+        # TODO:
+        # From king's position, try combinatations of ways pieces can move.
 
         # Check the rank
         rank_found_piece = False
@@ -384,6 +399,7 @@ class ChessLogic:
                     # If we do, check if that piece is an opponent's piece.
                         # Check if that piece is a rook or queen, something that can move in that way.
                             # If true, then the king is in check.
+
                 # Check along diagonals.
                     # Check for queen, bishop, rook.
                 # Check the spaces that a knight can be.
@@ -512,10 +528,6 @@ class ChessLogic:
             else: # Black's turn
                 self.black_king_pos = square
 
-        return 
-
-
-
     '''
     PRINCIPAL FUNCTIONS CALLED BY MAIN
     '''
@@ -551,8 +563,6 @@ class ChessLogic:
         # Update the piece instance.
         self.boardOfPieceInstances[end_row][end_col].currPos = (end_col, end_row) # ASK JASH ABOUT THE CURRPOS. 
         self.boardOfPieceInstances[end_row][end_col].hasMoved = True
-
-        return
 
 
     def update_board(self, move: str, kingside_castle: bool, queenside_castle: bool, en_passant: bool, pawn_prom: bool):
@@ -591,8 +601,6 @@ class ChessLogic:
                 self.board[end_row][end_col] = 'Q'
             else: # Black's turn
                 self.board[end_row][end_col] = 'q'
-
-        return
 
 
     ''' Converts a valid move into chess notation '''
@@ -678,9 +686,10 @@ class ChessLogic:
             elif piece == 'k': # king
                 valid, kingside_castle, queenside_castle = self.king_movement_valid()
 
-        # Check for checks, checkmates, stalemates. 
-        white_win, black_win, draw = self.is_game_over(valid) 
-        # TODO DO WE NEED TO ONLY CHECK FOR CHECK IF THERE WAS A VALID MOVE PLAYED?
+            # Check for checks, checkmates, stalemates. 
+            white_win, black_win, draw = self.is_game_over() 
+            # TODO DO WE NEED TO ONLY CHECK FOR CHECK IF THERE WAS A VALID MOVE PLAYED?
+
 
         return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, white_win, black_win, draw
     
