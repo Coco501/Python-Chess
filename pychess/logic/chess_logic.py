@@ -672,52 +672,70 @@ class ChessLogic:
 
             elif piece == 'k': # king
                 valid, kingside_castle, queenside_castle = self.king_movement_valid()
-        
-        # Check for checks, checkmates, stalemates. 
-        check, checkmate, stalemate = self.is_check_checkmate_stalemate(valid)
 
-        
+            # Check for checks, checkmates, stalemates. 
+            white_win, black_win, draw = self.is_game_over(valid) 
+            # TODO DO WE NEED TO ONLY CHECK FOR CHECK IF THERE WAS A VALID MOVE PLAYED?
 
-        return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, game_over, draw
+        return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, white_win, black_win, draw
     
 
-    def is_check_checkmate_stalemate(self, valid) -> tuple[bool, bool, bool]:
+    def is_game_over(self) -> tuple[bool, bool, bool]:
         check_player = False
         check_opponent = False
-        future_check = False # If any of the king's escape routes will end in check. 
-        checkmate = False 
+        future_check_player = False # If any of the king's escape routes will end in check. 
+        future_check_opponent = False
         stalemate = False
+        black_win = False
+        white_win = False
 
-        if valid: 
-            # Check that move does not leave own king in check.
-            # And check whether move places opponent's king in check. <- TODO
-            if self.whoseTurn == True: # White's turn. 
-                if self.player_in_check(self.white_king_pos):
-                    check_player = True
+        # 1) Check that move does not leave own king in check.
+        # 2) And check whether move places opponent's king in check. 
+        # 3) Check for possible Checkmate. Check if king will be in check if it tries to escape 
+        # to surrounding pieces. 
+        if self.whoseTurn == True: # White's turn. 
+            if self.player_in_check(self.white_king_pos):
+                check_player = True
+            if self.player_in_check(self.black_king_pos):
+                check_opponent = True
 
-            else: # Black's turn. 
-                if self.player_in_check(self.black_king_pos):
-                    check_player = True
+            if self.player_in_future_check(self.white_king_pos):
+                future_check_player = True
+            if self.player_in_future_check(self.black_king_pos):
+                future_check_opponent = True
 
-            # Check for possible Checkmate. Check if king will be in check if it tries to escape 
-            # to surrounding pieces. 
-            if self.whoseTurn == True: # White's turn. 
-                if self.player_in_future_check(self.white_king_pos):
-                    future_check = True
+            # Checkmate conditions: 
+            if check_player and future_check_player: 
+                # White is in checkmate. 
+                black_win = True
+            if check_opponent and future_check_opponent:
+                white_win = True
 
-            else: # Black's turn. 
-                if self.player_in_future_check(self.black_king_pos):
-                    future_check = True
+        else: # Black's turn. 
+            if self.player_in_check(self.black_king_pos):
+                check_player = True
+            if self.player_in_check(self.white_king_pos):
+                check_opponent = True
 
-            # Checkmate conditions. 
-            if check and future_check: 
-                checkmate = True
+            if self.player_in_future_check(self.black_king_pos):
+                future_check_player = True
+            if self.player_in_future_check(self.white_king_pos):
+                future_check_opponent = True
 
-            # Stalemate conditions. 
-            if (not check) and future_check:
-                stalemate = True
+            # Checkmate conditions: 
+            if check_player and future_check_player: 
+                # Black is in checkmate. 
+                white_win = True
+            if check_opponent and future_check_opponent:
+                black_win = True
         
-    # TODO: If checkmate is announced during current turn, 
+
+        # TODO # Stalemate conditions. 
+        # if (not check_player) and future_check:
+        #     # TODO: Check for Stalemate. 
+        #     pass
+        
+        return white_win, black_win, stalemate
 
 
     # ----------------------------------------------------------------- #
@@ -743,13 +761,12 @@ class ChessLogic:
         queenside_castle = False
         pawn_prom = False
         en_passant = False
-        game_over = False      # Game is over when one side wins or there is a draw.
         draw = False
 
         # parse_move() # Already done in the other functions.
 
         # Check if move is valid.
-        valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, game_over, draw = self.is_valid_move(move)
+        valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, white_win, black_win, draw = self.is_valid_move(move)
 
         # Write out the extended chess notation.
         notation = self.chess_notation(move, valid, capture, kingside_castle, queenside_castle, pawn_prom)
@@ -771,11 +788,11 @@ class ChessLogic:
             # Update the 'result' field.
             if draw:
                 self.result = "d"
-            elif game_over:
-                if self.whoseTurn == True: # White's turn
-                    self.result = "w"
-                else: # Black's turn
-                    self.result = "b"
+            elif white_win:
+                self.result = "w"
+            elif black_win:
+                self.result = "b"
+                    
             # Else, the game hasn't ended yet, so the result is still empty.
 
         return notation
