@@ -417,25 +417,26 @@ class ChessLogic:
         kingrow, kingcol = self.chess_notation_to_indices(king_pos)
         for row in range(8):
             for col in range(8):
+                move: str = self.index_to_move(row, col) + king_pos
                 if self.boardOfPieceInstances[row][col] is not None:
                     if self.boardOfPieceInstances[row][col].piece_color != self.boardOfPieceInstances[kingrow][kingcol].piece_color:
                         if self.boardOfPieceInstances[row][col].piece_type == 'p' or self.boardOfPieceInstances[row][col].piece_type == 'P':
-                            if self.pawn_movement_valid(self.index_to_move(row, col), king_pos):
+                            if self.pawn_movement_valid(move):
                                 return True
                         elif self.boardOfPieceInstances[row][col].piece_type == 'n' or self.boardOfPieceInstances[row][col].piece_type == 'N':
-                            if self.knight_movement_valid(self.index_to_move(row, col), king_pos):
+                            if self.knight_movement_valid(move):
                                 return True
                         elif self.boardOfPieceInstances[row][col].piece_type == 'b' or self.boardOfPieceInstances[row][col].piece_type == 'B':
-                            if self.bishop_movement_valid(self.index_to_move(row, col), king_pos):
+                            if self.bishop_movement_valid(move):
                                 return True
                         elif self.boardOfPieceInstances[row][col].piece_type == 'r' or self.boardOfPieceInstances[row][col].piece_type == 'R':
-                            if self.rook_movement_valid(self.index_to_move(row, col), king_pos):
+                            if self.rook_movement_valid(move):
                                 return True
                         elif self.boardOfPieceInstances[row][col].piece_type == 'q' or self.boardOfPieceInstances[row][col].piece_type == 'Q':
-                            if self.queen_movement_valid(self.index_to_move(row, col), king_pos):
+                            if self.queen_movement_valid(move):
                                 return True
                         elif self.boardOfPieceInstances[row][col].piece_type == 'k' or self.boardOfPieceInstances[row][col].piece_type == 'K':
-                            if self.knight_movement_valid(self.index_to_move(row, col), king_pos):
+                            if self.knight_movement_valid(move):
                                 return True
         return False
 
