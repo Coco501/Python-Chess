@@ -715,6 +715,35 @@ class ChessLogic:
         return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, white_win, black_win, draw
 
 
+    def player_in_future_check(self, king_pos: str):
+        # check surrounding 8 squares of king, if all surrounding squares would be in check, return true
+        # convert king_pos to board indices
+        row, col = self.chess_notation_to_indices(king_pos)
+        king: str = self.board[row][col] 
+        lastpiece: str
+
+        directions = [
+            (-1, -1), (-1, 0), (-1, 1),
+            (0, -1),            (0, 1),
+            (1, -1), (1, 0), (1,1)
+        ]
+
+        for rd, cd in directions:
+            if (row == 0 and rd == -1) or (row == 7 and rd == 1) or (col == 0 and cd == -1) or (col == 7 and cd == 1):
+                continue # skip due to out of bounds
+
+            new_row, new_col = row + rd, col + cd
+            lastpiece = self.board[new_row][new_col]
+            if not ((lastpiece.islower() and king.islower) or (lastpiece.isupper() and king.isupper())): # not moving onto own piece
+                self.board[new_row][new_col] = king # temporarily move king
+                self.board[row][col] = '' # king moved away
+                if not self.player_in_check(new_row, new_col): # TODO: ARGUMENTS EXPECTING CHESS NOTATION, change signature?
+                    # restore board
+                    self.board[row][col] = king
+                    self.board[new_row][new_col] = lastpiece
+                    return False # king not in check when moved
+                
+
     def is_game_over(self) -> tuple[bool, bool, bool]:
         check_player = False
         check_opponent = False
