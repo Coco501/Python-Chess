@@ -421,7 +421,7 @@ class ChessLogic:
                 if self.boardOfPieceInstances[row][col] is not None:
                     if self.boardOfPieceInstances[row][col].piece_color != self.boardOfPieceInstances[kingrow][kingcol].piece_color:
                         if self.boardOfPieceInstances[row][col].piece_type == 'p' or self.boardOfPieceInstances[row][col].piece_type == 'P':
-                            if self.pawn_movement_valid(move):
+                            if self.pawn_movement_valid(move, True):
                                 return True
                         elif self.boardOfPieceInstances[row][col].piece_type == 'n' or self.boardOfPieceInstances[row][col].piece_type == 'N':
                             if self.knight_movement_valid(move):
