@@ -595,7 +595,12 @@ class ChessLogic:
             # Must remove the captured pawn from the board.
             self.board[start_row][end_col] = ''
 
-        # TODO: Add if statement for pawn promotion.
+        if pawn_prom == True:
+            # Replace the pawn with a queen. 
+            if self.whoseTurn == True: # White's turn. 
+                self.board[end_row][end_col] = 'Q'
+            else: # Black's turn
+                self.board[end_row][end_col] = 'q'
 
 
     ''' Converts a valid move into chess notation '''
@@ -684,6 +689,7 @@ class ChessLogic:
             # Check for checks, checkmates, stalemates. 
             white_win, black_win, draw = self.is_game_over() 
             # TODO DO WE NEED TO ONLY CHECK FOR CHECK IF THERE WAS A VALID MOVE PLAYED?
+
 
         return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, white_win, black_win, draw
     
