@@ -13,7 +13,7 @@ def test_chess_notation_to_indices():
 
 
 def test_repr_and_str():
-    from logic.chess_logic import ChessLogic
+    from logic.chess_logic import ChessLogic, Piece
     p = ChessLogic()
 
     assert "K" in p.board.__str__()
@@ -21,6 +21,8 @@ def test_repr_and_str():
 
     assert "Q" in p.board.__repr__()
     assert "q" in p.board.__repr__()
+
+    assert Piece("K", "white", 0).__repr__() == "K"
 
 
 def test_index_to_move():
@@ -368,6 +370,30 @@ def test_is_valid_castle():
     x1, y1 = p.chess_notation_to_indices("e1")
     x2, y2 = p.chess_notation_to_indices("e2")
     assert p.is_valid_castle(x1, y1, x2, y2) == (False, False, False)
+
+
+def test_rook_movement():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    p.board = [
+            ['', '', '', '', '', '', 'k', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', 'P', 'p', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', 'R', '', '', '', '', '', 'K'],
+    ]
+
+    p.play_move("b1b6")
+
+    p.display_board()
+    assert p.board[2][1] == "R"
+
+    p.play_move("b6a6")
+    assert p.board[2][0] == "R"
 
 
 def test_moving_piece():
