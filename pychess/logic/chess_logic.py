@@ -516,9 +516,12 @@ class ChessLogic:
             else: # Black's turn
                 self.black_king_pos = square
 
+<<<<<<< HEAD
         return 
 
         return False
+=======
+>>>>>>> 376d091 (Small fixes)
 
     # ----------------------------------------------------------------- #
     # Principle tasks called by the main function --------------------- #
@@ -556,8 +559,6 @@ class ChessLogic:
         self.boardOfPieceInstances[end_row][end_col].currPos = (end_col, end_row) # ASK JASH ABOUT THE CURRPOS.
         self.boardOfPieceInstances[end_row][end_col].hasMoved = True
 
-        return
-
 
     def update_board(self, move: str, kingside_castle: bool, queenside_castle: bool, en_passant: bool, pawn_prom: bool):
         # Update the board.
@@ -590,8 +591,6 @@ class ChessLogic:
             self.board[start_row][end_col] = ''
 
         # TODO: Add if statement for pawn promotion.
-
-        return
 
 
     def chess_notation(self, move: str, valid: bool, capture: bool, kingside_castle: bool,
@@ -674,6 +673,7 @@ class ChessLogic:
                 valid = self.queen_movement_valid(move)
 
             elif piece == 'k': # king
+<<<<<<< HEAD
                 valid, kingside_castle, queenside_castle = self.king_movement_valid()
         
         # Check for checks, checkmates, stalemates. 
@@ -681,6 +681,13 @@ class ChessLogic:
 
         
 
+=======
+                valid, kingside_castle, queenside_castle = self.king_movement_valid(move)
+
+        # Check for checks, checkmates, stalemates.
+        check, checkmate, stalemate = self.is_check_checkmate_stalemate(valid)
+
+>>>>>>> 376d091 (Small fixes)
         return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, game_over, draw
     
 
