@@ -2,8 +2,8 @@ class Piece:
     # initializing the piece class
     def __init__(self, piece_type, piece_color, currPos):
         self.piece_type = piece_type
-        self.piece_color = piece_color # Not sure if this is needed either.
-        self.currPos = currPos # REMOVE THIS, NOT NECCESSARY.
+        self.piece_color = piece_color 
+        self.currPos = currPos 
         self.hasMoved = False
 
     def __str__(self):
@@ -34,7 +34,8 @@ class ChessLogic:
 
             '' - Game In Progress
         """
-        # board[row][col]
+
+        # self.board[row][col]
         self.board = [
 			['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
 			['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
@@ -58,38 +59,19 @@ class ChessLogic:
         ]
 
         self.result = ""
-
         self.prev_move_played = "" # Holds the previous move.
-
-        # Positions of the kings. 
-        self.white_king_pos = "e1" 
+        self.white_king_pos = "e1" # Position of both kings 
         self.black_king_pos = "e8"
-
-		# Boolean value keeping track of whose turn it is, True = white's turn, False = black's turn
-        self.whoseTurn: bool = True
+        self.whoseTurn: bool = True # Boolean value keeping track of whose turn it is, True = white's turn, False = black's turn
 
 
-    # ----------------------------------------------------------------- #
-    # Functions related to logic for specific pieces ------------------ #
 
-    def is_pawn_moving_forward(self, row, col, target_row) -> bool:
-        isPawnMovingForward = False
+    '''
+    PIECE-SPECIFIC FUNCTIONS 
+    '''
 
-        if self.boardOfPieceInstances[row][col].piece_color == "black" and int(row) < int(target_row):
-            isPawnMovingForward = False
-
-        if self.boardOfPieceInstances[row][col].piece_color == "white" and int(row) > int(target_row):
-            isPawnMovingForward = False
-
-        else:
-            isPawnMovingForward = True
-
-        return isPawnMovingForward
-
-    # each move function returns true if the move is possible (only considering tiles)
-    # do not consider external factors like other pieces
-    # some functions return tuples of bools, for special cases like en passant, promotion, castling, etc.
-    def move_pawn(self, move: str, piece_on_end_tile: bool) -> tuple[bool, bool, bool]:
+    ''' PAWN '''
+    def pawn_movement_valid(self, move: str, piece_on_end_tile: bool) -> tuple[bool, bool, bool, bool]:
         isPawnMoveAllowed = True
         pawn_prom = False
         en_passant = False
@@ -140,7 +122,22 @@ class ChessLogic:
 
         return isPawnMoveAllowed, capture, pawn_prom, en_passant
 
+    ''' PAWN HELPER '''
+    def is_pawn_moving_forward(self, row, col, target_row) -> bool:
+        isPawnMovingForward = False
 
+        if self.boardOfPieceInstances[row][col].piece_color == "black" and int(row) < int(target_row):
+            isPawnMovingForward = True
+
+        if self.boardOfPieceInstances[row][col].piece_color == "white" and int(row) > int(target_row):
+            isPawnMovingForward = True
+
+        else:
+            isPawnMovingForward = False
+
+        return isPawnMovingForward
+
+    ''' ROOK '''
     def rook_movement_valid(self, move: str) -> bool:
         start_tile = move[0:2]
         end_tile = move[2:4]
@@ -170,7 +167,7 @@ class ChessLogic:
 
         return False
 
-
+    ''' KNIGHT '''
     def knight_movement_valid(self, move: str) -> bool:
         isKnightMoveAllowed = True
         start_tile = move[0:2]
@@ -191,7 +188,7 @@ class ChessLogic:
 
         return isKnightMoveAllowed
 
-
+    ''' BISHOP '''
     def bishop_movement_valid(self, move: str) -> bool:
         start_tile = move[0:2]
         end_tile = move[2:4]
@@ -213,7 +210,7 @@ class ChessLogic:
 
         return True
 
-
+    ''' YASS QUEEN '''
     def queen_movement_valid(self, move: str) -> bool:
         # The queen's can move in any direction, as long as it's in a straight line.
         # Horizontal, vertical, and diagonal. Basically a combination of rook and bishop movements.
@@ -223,9 +220,8 @@ class ChessLogic:
         # Queen is moving properly if it moves either like a rook or a bishop.
         return hor_or_vert or diag
 
-
+    ''' KING '''
     def king_movement_valid(self, move: str) -> tuple[bool, bool, bool]:
-
         valid = True
         kingside_castle = False
         queenside_castle = False
@@ -259,10 +255,13 @@ class ChessLogic:
 
         return valid, kingside_castle, queenside_castle
 
+    
 
-    # ----------------------------------------------------------------- #
-    # Edge Cases ------------------------------------------------------ #
+    '''
+    EDGE CASES
+    '''
 
+    ''' PAWN PROMOTION '''
     def pawn_promotion(self, start_row: int, start_col: int, end_row: int, end_col: int) -> bool:
         if self.board[start_row][start_col] == 'P': # White pawn.
             if end_row == 0:
@@ -276,7 +275,7 @@ class ChessLogic:
             else:
                 return False
 
-
+    ''' EN PASSANT '''
     def is_en_passant(self, move: str) -> bool:
         # Get indices of current move.
         start_row, start_col = self.chess_notation_to_indices(move[0:2])
@@ -303,7 +302,7 @@ class ChessLogic:
 
         return False
 
-
+    ''' CASTLING '''
     def is_valid_castle(self, start_row: int, start_col: int, end_row: int, end_col: int) -> tuple[bool, bool, bool]:
         valid = False
         kingside_castle = False
@@ -342,13 +341,28 @@ class ChessLogic:
         return valid, kingside_castle, queenside_castle
 
 
-    def player_in_check(self, rank: int, file: int) -> bool:
+    def player_in_check(self, move: str) -> bool:
+      
+        # TODO:
+        # From king's position, try combinatations of ways pieces can move. 
+            # Start at king, and increment outwards. 
+                # Check along the vertical until we hit a piece. 
+                    # If we do, check if that piece is an opponent's piece. 
+                    # Check if that piece is a rook or queen, something that can move in that way. 
+                        # If true, then the king is in check. 
+                # Check along the horizontal until we hit a piece. 
+                    # If we do, check if that piece is an opponent's piece. 
+                        # Check if that piece is a rook or queen, something that can move in that way. 
+                            # If true, then the king is in check. 
+
+      
         # TODO:
         # From king's position, try combinatations of ways pieces can move.
 
-        # TODO: Get the position of the king
-        kings_rank = rank
-        kings_file = file
+        kings_rank, kings_file = self.chess_notation_to_indices(move)
+
+        # TODO:
+        # From king's position, try combinatations of ways pieces can move.
 
         # Check the rank
         rank_found_piece = False
@@ -385,6 +399,7 @@ class ChessLogic:
                     # If we do, check if that piece is an opponent's piece.
                         # Check if that piece is a rook or queen, something that can move in that way.
                             # If true, then the king is in check.
+
                 # Check along diagonals.
                     # Check for queen, bishop, rook.
                 # Check the spaces that a knight can be.
@@ -399,26 +414,23 @@ class ChessLogic:
 
         return False
 
-
+    ''' CHECKMATE '''
     def player_in_checkmate(self) -> bool:
         # TODO:
         # Call check from all of the possible spaces a king can move to? 8 spaces.
 
         return False
 
-
+    ''' STALEMATE '''
     def stalemate(self) -> bool:
         # If player is not in check, but there is no move the player can make without putting their king in check.
 
         return False
 
-
-    # def moved_to_check():
-    #     pass
-
-
-    # ----------------------------------------------------------------- #
-    # Helper Functions ------------------------------------------------ #
+    
+    '''
+    HELPER FUNCTIONS
+    '''
 
     def chess_notation_to_indices(self, tile: str) -> tuple[int, int]:
         file = tile[0]  # 'a'-'h'
@@ -468,7 +480,7 @@ class ChessLogic:
 
 
     def is_same_tile(self, move: str) -> bool:
-        return move[0:2] == move[2:4]
+        return move[0:2] == move[2:4] # returns true if a move from one tile to itself
 
 
     def pieces_between_cols(self, start_col: int, end_col: int, row: int) -> bool:
@@ -516,9 +528,9 @@ class ChessLogic:
             else: # Black's turn
                 self.black_king_pos = square
 
-    # ----------------------------------------------------------------- #
-    # Principle tasks called by the main function --------------------- #
-
+    '''
+    PRINCIPAL FUNCTIONS CALLED BY MAIN
+    '''
 
     def update_piece_and_boardOfPieceInstances(self, move: str, kingside_castle: bool, queenside_castle: bool, en_passant: bool):
         start_tile = move[0:2]
@@ -549,7 +561,7 @@ class ChessLogic:
             self.boardOfPieceInstances[start_row][end_col] = ''
 
         # Update the piece instance.
-        self.boardOfPieceInstances[end_row][end_col].currPos = (end_col, end_row) # ASK JASH ABOUT THE CURRPOS.
+        self.boardOfPieceInstances[end_row][end_col].currPos = (end_col, end_row) # ASK JASH ABOUT THE CURRPOS. 
         self.boardOfPieceInstances[end_row][end_col].hasMoved = True
 
 
@@ -586,6 +598,7 @@ class ChessLogic:
         # TODO: Add if statement for pawn promotion.
 
 
+    ''' Converts a valid move into chess notation '''
     def chess_notation(self, move: str, valid: bool, capture: bool, kingside_castle: bool,
                        queenside_castle: bool, pawn_prom: bool) -> str:
         # Format: {piece if not pawn}{starting pos}{x if capture}{ending pos}{=Q if promotion}
@@ -651,7 +664,7 @@ class ChessLogic:
 
             # Checking piece specific valid/invalid.
             if piece == 'p': # pawn
-                valid, capture, pawn_prom, en_passant = self.move_pawn(move, capture)
+                valid, capture, pawn_prom, en_passant = self.pawn_movement_valid(move, capture)
 
             elif piece == 'r': # rook
                 valid = self.rook_movement_valid(move)
@@ -667,50 +680,70 @@ class ChessLogic:
 
             elif piece == 'k': # king
                 valid, kingside_castle, queenside_castle = self.king_movement_valid()
-        
-        # Check for checks, checkmates, stalemates. 
-        check, checkmate, stalemate = self.is_check_checkmate_stalemate(valid)
 
-        return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, game_over, draw
+            # Check for checks, checkmates, stalemates. 
+            white_win, black_win, draw = self.is_game_over() 
+            # TODO DO WE NEED TO ONLY CHECK FOR CHECK IF THERE WAS A VALID MOVE PLAYED?
+
+        return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, white_win, black_win, draw
     
 
-    def is_check_checkmate_stalemate(self, valid) -> tuple[bool, bool, bool]:
+    def is_game_over(self) -> tuple[bool, bool, bool]:
         check_player = False
         check_opponent = False
-        future_check = False # If any of the king's escape routes will end in check. 
-        checkmate = False 
+        future_check_player = False # If any of the king's escape routes will end in check. 
+        future_check_opponent = False
         stalemate = False
+        black_win = False
+        white_win = False
 
-        if valid: 
-            # Check that move does not leave own king in check.
-            # And check whether move places opponent's king in check. <- TODO
-            if self.whoseTurn == True: # White's turn. 
-                if self.player_in_check(self.white_king_pos):
-                    check_player = True
+        # 1) Check that move does not leave own king in check.
+        # 2) And check whether move places opponent's king in check. 
+        # 3) Check for possible Checkmate. Check if king will be in check if it tries to escape 
+        # to surrounding pieces. 
+        if self.whoseTurn == True: # White's turn. 
+            if self.player_in_check(self.white_king_pos):
+                check_player = True
+            if self.player_in_check(self.black_king_pos):
+                check_opponent = True
 
-            else: # Black's turn. 
-                if self.player_in_check(self.black_king_pos):
-                    check_player = True
+            if self.player_in_future_check(self.white_king_pos):
+                future_check_player = True
+            if self.player_in_future_check(self.black_king_pos):
+                future_check_opponent = True
 
-            # Check for possible Checkmate. Check if king will be in check if it tries to escape 
-            # to surrounding pieces. 
-            if self.whoseTurn == True: # White's turn. 
-                if self.player_in_future_check(self.white_king_pos):
-                    future_check = True
+            # Checkmate conditions: 
+            if check_player and future_check_player: 
+                # White is in checkmate. 
+                black_win = True
+            if check_opponent and future_check_opponent:
+                white_win = True
 
-            else: # Black's turn. 
-                if self.player_in_future_check(self.black_king_pos):
-                    future_check = True
+        else: # Black's turn. 
+            if self.player_in_check(self.black_king_pos):
+                check_player = True
+            if self.player_in_check(self.white_king_pos):
+                check_opponent = True
 
-            # Checkmate conditions. 
-            if check and future_check: 
-                checkmate = True
+            if self.player_in_future_check(self.black_king_pos):
+                future_check_player = True
+            if self.player_in_future_check(self.white_king_pos):
+                future_check_opponent = True
 
-            # Stalemate conditions. 
-            if (not check) and future_check:
-                stalemate = True
+            # Checkmate conditions: 
+            if check_player and future_check_player: 
+                # Black is in checkmate. 
+                white_win = True
+            if check_opponent and future_check_opponent:
+                black_win = True
         
-    # TODO: If checkmate is announced during current turn, 
+
+        # TODO # Stalemate conditions. 
+        # if (not check_player) and future_check:
+        #     # TODO: Check for Stalemate. 
+        #     pass
+        
+        return white_win, black_win, stalemate
 
 
     # ----------------------------------------------------------------- #
@@ -736,13 +769,12 @@ class ChessLogic:
         queenside_castle = False
         pawn_prom = False
         en_passant = False
-        game_over = False      # Game is over when one side wins or there is a draw.
         draw = False
 
         # parse_move() # Already done in the other functions.
 
         # Check if move is valid.
-        valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, game_over, draw = self.is_valid_move(move)
+        valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, white_win, black_win, draw = self.is_valid_move(move)
 
         # Write out the extended chess notation.
         notation = self.chess_notation(move, valid, capture, kingside_castle, queenside_castle, pawn_prom)
@@ -764,32 +796,14 @@ class ChessLogic:
             # Update the 'result' field.
             if draw:
                 self.result = "d"
-            elif game_over:
-                if self.whoseTurn == True: # White's turn
-                    self.result = "w"
-                else: # Black's turn
-                    self.result = "b"
+            elif white_win:
+                self.result = "w"
+            elif black_win:
+                self.result = "b"
+                    
             # Else, the game hasn't ended yet, so the result is still empty.
 
         return notation
-    
-
-
-        #Implement this
-        # parse starting tile and destination tile into two variables
-        # figure out if there is a piece on starting tile, if not, invalid move
-        #   if piece is not current user's piece, invalid move (keep track of turns)
-        # append piece letter to result string (no letter for pawn)
-        # call respective function for that piece
-        # if valid, check if destination already has a piece
-        #   if opponent piece, capture (append x to denote capture in extended chess notation)
-        #   if own piece, invalid move
-        # check if moving put user into check, if it did, invalid move
-        # check if opponent is now in checkmate, if they are, change game state to win
-        # increment number of moves for piece
-        # update board state
-        # change to other players turn
-
 
 # FOR TESTING?
 """
@@ -797,7 +811,7 @@ class ChessLogic:
 gameLogic = ChessLogic()
 
 # jash testing purposes?
-print("e2 to e4:", gameLogic.move_pawn("e2", "e4"))  # Valid: White pawn moves two squares forward from start
-print("d7 to d5:", gameLogic.move_pawn("d7", "d5"))
-print("e4 to d5:", gameLogic.move_pawn("e4", "d5"))  # Valid: White pawn captures black pawn
+print("e2 to e4:", gameLogic.pawn_movement_valid("e2", "e4"))  # Valid: White pawn moves two squares forward from start
+print("d7 to d5:", gameLogic.pawn_movement_valid("d7", "d5"))
+print("e4 to d5:", gameLogic.pawn_movement_valid("e4", "d5"))  # Valid: White pawn captures black pawn
 """
