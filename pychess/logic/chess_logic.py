@@ -342,13 +342,11 @@ class ChessLogic:
         return valid, kingside_castle, queenside_castle
 
 
-    def player_in_check(self, rank: int, file: int) -> bool:
+    def player_in_check(self, move: str) -> bool:
         # TODO:
         # From king's position, try combinatations of ways pieces can move.
 
-        # TODO: Get the position of the king
-        kings_rank = rank
-        kings_file = file
+        kings_rank, kings_file = self.chess_notation_to_indices(move)
 
         # Check the rank
         rank_found_piece = False
