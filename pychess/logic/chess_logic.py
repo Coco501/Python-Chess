@@ -483,6 +483,33 @@ class ChessLogic:
 
         # return False
 
+    # check if player is in check
+    def player_in_check(self, king_pos: str) -> bool:
+        # check if any of the opponent's pieces can move to the king's position
+        for row in range(8):
+            for col in range(8):
+                if self.boardOfPieceInstances[row][col] is not None:
+                    if self.boardOfPieceInstances[row][col].piece_color != self.boardOfPieceInstances[king_pos[1]][king_pos[0]].piece_color:
+                        if self.boardOfPieceInstances[row][col].piece_type == 'p' or self.boardOfPieceInstances[row][col].piece_type == 'P':
+                            if self.pawn_movement_valid(index_to_move(row, col), king_pos):
+                                return True
+                        elif self.boardOfPieceInstances[row][col].piece_type == 'n' or self.boardOfPieceInstances[row][col].piece_type == 'N':
+                            if self.knight_movement_valid(index_to_move(row, col), king_pos):
+                                return True
+                        elif self.boardOfPieceInstances[row][col].piece_type == 'b' or self.boardOfPieceInstances[row][col].piece_type == 'B':
+                            if self.bishop_movement_valid(index_to_move(row, col), king_pos):
+                                return True
+                        elif self.boardOfPieceInstances[row][col].piece_type == 'r' or self.boardOfPieceInstances[row][col].piece_type == 'R':
+                            if self.rook_movement_valid(index_to_move(row, col), king_pos):
+                                return True
+                        elif self.boardOfPieceInstances[row][col].piece_type == 'q' or self.boardOfPieceInstances[row][col].piece_type == 'Q':
+                            if self.queen_movement_valid(index_to_move(row, col), king_pos):
+                                return True
+                        elif self.boardOfPieceInstances[row][col].piece_type == 'k' or self.boardOfPieceInstances[row][col].piece_type == 'K':
+                            if self.knight_movement_valid(index_to_move(row, col), king_pos):
+                                return True
+        return False
+
         
     def make_sure_piece_is_moving_forward(self, row, col, target_row) -> bool:
         if self.boardOfPieceInstances[row][col].piece_color == "black" and int(row) < int(target_row):
