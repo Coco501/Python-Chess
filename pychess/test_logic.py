@@ -294,6 +294,18 @@ def test_update_king_position():
     assert p.white_king_pos == "e1"  # Should this fail?
 
 
+def test_king_movement_valid():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    p.play_move("e2e4")
+    p.display_board()
+
+    assert p.king_movement_valid("e1e2") == (True, False, False)  # Should be valid
+
+    assert p.king_movement_valid("e1e10") == (False, False, False)  # Should be invalid
+
+
 def test_moving_piece():
     pass
 
