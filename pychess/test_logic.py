@@ -115,13 +115,13 @@ def test_pawn_promotion_black():
     p.board[7] = [""] * 8
     p.board[6] = [""] * 8
 
-    p.update_board("d8d6", False, False, False, False)
-    p.update_board("d6d5", False, False, False, False)
+    p.update_board("d7d5", False, False, False, False)
     p.update_board("d5d4", False, False, False, False)
     p.update_board("d4d3", False, False, False, False)
+    p.update_board("d3d2", False, False, False, False)
 
-    x, y = p.chess_notation_to_indices("d7")
-    nx, ny = p.chess_notation_to_indices("d8")
+    x, y = p.chess_notation_to_indices("d2")
+    nx, ny = p.chess_notation_to_indices("d1")
 
     print(p.board)
 
