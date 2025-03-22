@@ -89,7 +89,7 @@ class ChessLogic:
         # Checks if pawn is moving forward. Can't move backwards!
         moveForward = self.is_pawn_moving_forward(row, col, target_row)
         if (not moveForward):
-            return False
+            return False, False, False, False
 
         # Check if the pawn is moving forward either one or two squares.
         if col == target_col:
