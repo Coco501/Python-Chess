@@ -372,6 +372,30 @@ def test_is_valid_castle():
     assert p.is_valid_castle(x1, y1, x2, y2) == (False, False, False)
 
 
+def test_rook_movement():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    p.board = [
+            ['', '', '', '', '', '', 'k', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', 'P', 'p', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', 'R', '', '', '', '', '', 'K'],
+    ]
+
+    p.play_move("b1b6")
+
+    p.display_board()
+    assert p.board[2][1] == "R"
+
+    p.play_move("b6a6")
+    assert p.board[2][0] == "R"
+
+
 def test_moving_piece():
     pass
 

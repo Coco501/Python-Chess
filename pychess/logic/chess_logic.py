@@ -753,7 +753,7 @@ class ChessLogic:
                 valid, kingside_castle, queenside_castle = self.king_movement_valid(move)
 
             # Check for checks, checkmates, stalemates.
-            white_win, black_win, draw = self.is_game_over()
+            # white_win, black_win, draw = self.is_game_over()
             # TODO DO WE NEED TO ONLY CHECK FOR CHECK IF THERE WAS A VALID MOVE PLAYED?
 
         return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, white_win, black_win, draw
