@@ -528,10 +528,6 @@ class ChessLogic:
             else: # Black's turn
                 self.black_king_pos = square
 
-        return 
-
-
-
     '''
     PRINCIPAL FUNCTIONS CALLED BY MAIN
     '''
@@ -568,8 +564,6 @@ class ChessLogic:
         self.boardOfPieceInstances[end_row][end_col].currPos = (end_col, end_row) # ASK JASH ABOUT THE CURRPOS. 
         self.boardOfPieceInstances[end_row][end_col].hasMoved = True
 
-        return
-
 
     def update_board(self, move: str, kingside_castle: bool, queenside_castle: bool, en_passant: bool, pawn_prom: bool):
         # Update the board.
@@ -602,8 +596,6 @@ class ChessLogic:
             self.board[start_row][end_col] = ''
 
         # TODO: Add if statement for pawn promotion.
-
-        return
 
 
     ''' Converts a valid move into chess notation '''
