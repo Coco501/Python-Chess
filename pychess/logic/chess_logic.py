@@ -240,7 +240,7 @@ class ChessLogic:
         change_in_rows = abs(start_row - end_row)
         change_in_cols = abs(start_col - end_col)
 
-        if (change_in_rows <= 0 and change_in_cols <= 0):
+        if (change_in_rows <= 1 and change_in_cols <= 1):
             # The King has only moved one square, so no possibility of a castle.
             # This is a valid way for the king to move.
             valid = True
@@ -338,7 +338,6 @@ class ChessLogic:
             queenside_castle = True
 
         # TODO: Check that the king is not passing through or land on a square that is under attack.
-        #
         #
 
         return valid, kingside_castle, queenside_castle
