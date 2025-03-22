@@ -13,7 +13,7 @@ def test_chess_notation_to_indices():
 
 
 def test_repr_and_str():
-    from logic.chess_logic import ChessLogic
+    from logic.chess_logic import ChessLogic, Piece
     p = ChessLogic()
 
     assert "K" in p.board.__str__()
@@ -21,6 +21,8 @@ def test_repr_and_str():
 
     assert "Q" in p.board.__repr__()
     assert "q" in p.board.__repr__()
+
+    assert Piece("K", "white", 0).__repr__() == "K"
 
 
 def test_index_to_move():
