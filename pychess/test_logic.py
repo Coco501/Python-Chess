@@ -306,6 +306,26 @@ def test_king_movement_valid():
     assert p.king_movement_valid("e1e10") == (False, False, False)  # Should be invalid
 
 
+def test_is_en_passant():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    p.board = [
+            ['', '', '', '', '', '', 'k', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', 'P', 'p', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', 'K'],
+    ]
+
+    assert not p.is_en_passant("d5d6")  # Not a valid en passant
+
+    assert p.is_en_passant("d5e6")  # Should be valid en passant move
+
+
 def test_moving_piece():
     pass
 
