@@ -414,10 +414,11 @@ class ChessLogic:
 
     def player_in_check(self, king_pos: str) -> bool:
         # check if any of the opponent's pieces can move to the king's position
+        kingrow, kingcol = self.chess_notation_to_indices(king_pos)
         for row in range(8):
             for col in range(8):
                 if self.boardOfPieceInstances[row][col] is not None:
-                    if self.boardOfPieceInstances[row][col].piece_color != self.boardOfPieceInstances[king_pos[1]][king_pos[0]].piece_color:
+                    if self.boardOfPieceInstances[row][col].piece_color != self.boardOfPieceInstances[kingrow][kingcol].piece_color:
                         if self.boardOfPieceInstances[row][col].piece_type == 'p' or self.boardOfPieceInstances[row][col].piece_type == 'P':
                             if self.pawn_movement_valid(self.index_to_move(row, col), king_pos):
                                 return True
