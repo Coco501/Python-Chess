@@ -99,16 +99,19 @@ class ChessLogic:
                 pawn_prom = self.pawn_promotion(row, col, target_row, target_col)
 
             # If pawn is moving two steps forward, it must be its first move.
-            if abs(row - target_row) == 2:
+            elif abs(row - target_row) == 2:
                 if(self.boardOfPieceInstances[row][col].hasMoved == True):
                     isPawnMoveAllowed = False
+
+            else: 
+                return False, False, False, False
 
             # For a pawn moving forward, make sure that there is nothing on the end tile or in between.
             if piece_on_end_tile or self.pieces_between_rows(row, target_row, col):
                 isPawnMoveAllowed = False
 
         # Check if the pawn is moving diagonally. Can do so for capture.
-        if abs(row - target_row) == 1 and abs(col - target_col) == 1:
+        elif abs(row - target_row) == 1 and abs(col - target_col) == 1:
                 if piece_on_end_tile == True:
                     # End tile had opponent's piece.
                     # Correctly moved diagonal to capture.
