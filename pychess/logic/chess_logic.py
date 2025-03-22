@@ -5,6 +5,7 @@ class Piece:
         self.piece_color = piece_color
         self.currPos = currPos
         self.hasMoved = False
+        self.numMoves = 0
 
     def __str__(self):
         return f"{self.piece_type}"
