@@ -705,12 +705,11 @@ class ChessLogic:
                 valid = self.queen_movement_valid(move)
 
             elif piece == 'k': # king
-                valid, kingside_castle, queenside_castle = self.king_movement_valid()
+                valid, kingside_castle, queenside_castle = self.king_movement_valid(move)
 
-            # Check for checks, checkmates, stalemates.
-            white_win, black_win, draw = self.is_game_over()
-            # TODO DO WE NEED TO ONLY CHECK FOR CHECK IF THERE WAS A VALID MOVE PLAYED?
-
+        # Check for checks, checkmates, stalemates.
+        white_win, black_win, draw = self.is_game_over()
+        # TODO DO WE NEED TO ONLY CHECK FOR CHECK IF THERE WAS A VALID MOVE PLAYED?
 
         return valid, capture, kingside_castle, queenside_castle, pawn_prom, en_passant, white_win, black_win, draw
 
@@ -719,7 +718,7 @@ class ChessLogic:
         # check surrounding 8 squares of king, if all surrounding squares would be in check, return true
         # convert king_pos to board indices
         row, col = self.chess_notation_to_indices(king_pos)
-        king: str = self.board[row][col] 
+        king: str = self.board[row][col]
         lastpiece: str
 
         directions = [
@@ -743,7 +742,7 @@ class ChessLogic:
                     self.board[row][col] = king
                     self.board[new_row][new_col] = lastpiece
                     return False # king not in check when moved
-                
+
 
     def is_game_over(self) -> tuple[bool, bool, bool]:
         check_player = False
