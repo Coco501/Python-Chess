@@ -12,6 +12,17 @@ def test_chess_notation_to_indices():
     assert p.chess_notation_to_indices("b1") == (7, 1)
 
 
+def test_index_to_move():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    assert p.index_to_move(3, 0) == "a5"
+    assert p.index_to_move(0, 0) == "a8"
+    assert p.index_to_move(7, 7) == "h1"
+    assert p.index_to_move(6, 1) == "b2"
+    assert p.index_to_move(7, 1) == "b1"
+
+
 def test_dir_increment_decrement():
     from logic.chess_logic import ChessLogic
     p = ChessLogic()
@@ -136,8 +147,7 @@ def test_player_in_check():
     p.board[6] = [""] * 8
     p.board[1] = [""] * 8
 
-    x, y = p.chess_notation_to_indices("e1")
-    assert not p.player_in_check(x, y)
+    assert not p.player_in_check("e1")
 
     # Place a queen
     a, b = p.chess_notation_to_indices("e5")
@@ -145,8 +155,7 @@ def test_player_in_check():
 
     print(p.board)
 
-    x, y = p.chess_notation_to_indices("e1")
-    assert p.player_in_check(x, y)  # TODO: THIS SHOULD WORK
+    assert p.player_in_check("e1")  # TODO: THIS SHOULD WORK
 
 
 def test_moving_piece():
