@@ -220,6 +220,29 @@ def test_checkmate3():
     assert p.is_game_over() == tuple[True, False, False]
 
 
+def test_play_move_single():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    p.play_move("e2e4")
+    assert p.board[4][4] == "P"
+    assert p.board[6][4] == ""
+
+
+def test_play_move_many():
+    from logic.chess_logic import ChessLogic
+    p = ChessLogic()
+
+    p.play_move("e2e4")
+    assert p.board[4][4] == "P"
+    assert p.board[6][4] == ""
+
+    p.play_move("d2d3")
+    p.display_board()
+    assert p.board[6][4] == " "
+    assert p.board[5][4] == "P"
+
+
 def test_moving_piece():
     pass
 
